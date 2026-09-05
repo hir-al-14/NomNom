@@ -12,9 +12,10 @@ export const spacing = {
 export const typography = {
   title: {
     fontSize: 36,
-    fontWeight: '700',
+    fontFamily: 'Manrope_700Bold',
   },
   body: {
+    fontFamily: 'Manrope_400Regular',
     fontSize: 16,
     lineHeight: 24,
   },
