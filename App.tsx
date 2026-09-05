@@ -9,6 +9,7 @@ import { AccountTypeSelector, type AccountType } from './src/components/AccountT
 import { colors, spacing, typography } from './src/theme';
 import { Action } from './src/components/ui';
 import { DemoApp } from './src/demo/DemoApp';
+import { LoginHeader } from './src/components/LoginHeader';
 
 function AppContent() {
   const [fontsLoaded, fontError] = useFonts({ Manrope_400Regular, Manrope_700Bold });
@@ -21,12 +22,7 @@ function AppContent() {
 
   const welcome = (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text accessibilityRole="header" style={[styles.title, !fontsLoaded && styles.fontFallback]}>
-        NomNom
-      </Text>
-      <Text style={[styles.subtitle, !fontsLoaded && styles.fontFallback]}>
-        A little care in every bite.
-      </Text>
+      <LoginHeader fontsLoaded={fontsLoaded} />
       <AccountTypeSelector
         value={accountType}
         onChange={setAccountType}
