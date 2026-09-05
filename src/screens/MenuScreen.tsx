@@ -10,9 +10,11 @@ type Props = {
   restrictions: Restriction[];
   onSelect: (dish: Dish) => void;
   onProfile: () => void;
+  onCart: () => void;
+  onExit: () => void;
 };
 
-export function MenuScreen({ dishes, restrictions, onSelect, onProfile }: Props) {
+export function MenuScreen({ dishes, restrictions, onSelect, onProfile, onCart, onExit }: Props) {
   return (
     <Screen>
       <Body>YOUR NEXT GOOD MEAL</Body>
@@ -22,6 +24,7 @@ export function MenuScreen({ dishes, restrictions, onSelect, onProfile }: Props)
         ? restrictions.map(({ tag }) => restrictionLabel(tag)).join(' · ')
         : 'No dietary needs selected yet.'}</Body>
       <Action label="Edit dietary profile" onPress={onProfile} />
+      <Action label="View cart" onPress={onCart} />
       {dishes.map((dish) => {
         const match = matchDish(dish, restrictions);
         return (
@@ -42,6 +45,7 @@ export function MenuScreen({ dishes, restrictions, onSelect, onProfile }: Props)
         );
       })}
       <Body>Sample menu for testing. Ingredient data is fictional.</Body>
+      <Action label="Back to welcome" onPress={onExit} />
     </Screen>
   );
 }
