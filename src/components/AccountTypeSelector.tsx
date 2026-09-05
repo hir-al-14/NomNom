@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing, typography } from '../theme';
+import { Map, UserRound } from 'lucide-react-native';
+import { colors, typography } from '../theme';
 
 export type AccountType = 'personal' | 'restaurant';
 
@@ -17,9 +18,6 @@ const options = [
 export function AccountTypeSelector({ value, onChange, fontsLoaded }: Props) {
   return (
     <View style={styles.group}>
-      <Text style={[styles.label, !fontsLoaded && styles.fontFallback]}>
-        How will you use NomNom?
-      </Text>
       {options.map((option) => (
         <Pressable
           key={option.value}
@@ -34,12 +32,17 @@ export function AccountTypeSelector({ value, onChange, fontsLoaded }: Props) {
             pressed && { opacity: 0.75 },
           ]}
         >
-          <Text style={[styles.label, !fontsLoaded && styles.fontFallback]}>
-            {value === option.value ? '●  ' : '○  '}{option.label}
-          </Text>
-          <Text style={[styles.detail, !fontsLoaded && styles.fontFallback]}>
-            {option.detail}
-          </Text>
+          {option.value === 'personal'
+            ? <UserRound size={32} color={colors.text} accessible={false} />
+            : <Map size={32} color={colors.text} accessible={false} />}
+          <View style={styles.optionText}>
+            <Text style={[styles.label, !fontsLoaded && styles.fontFallback]}>
+              {option.label}
+            </Text>
+            <Text style={[styles.detail, !fontsLoaded && styles.fontFallback]}>
+              {option.detail}
+            </Text>
+          </View>
         </Pressable>
       ))}
     </View>
@@ -49,33 +52,40 @@ export function AccountTypeSelector({ value, onChange, fontsLoaded }: Props) {
 const styles = StyleSheet.create({
   group: {
     width: '100%',
-    maxWidth: 480,
-    gap: spacing.textGap,
-    marginTop: spacing.screenPadding,
+    maxWidth: 360,
+    gap: 6,
+    marginTop: 16,
   },
   option: {
-    minHeight: 48,
-    padding: 18,
-    backgroundColor: colors.surface,
+    minHeight: 60,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    backgroundColor: colors.selected,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'transparent',
     borderRadius: 16,
   },
   label: {
     ...typography.body,
+    fontFamily: typography.title.fontFamily,
+    lineHeight: 20,
     color: colors.text,
   },
   selected: {
     backgroundColor: colors.selected,
-    borderColor: colors.primary,
+    borderColor: colors.border,
   },
   detail: {
     ...typography.body,
-    fontSize: 13,
+    fontSize: 12,
+    lineHeight: 16,
     color: colors.textMuted,
-    marginTop: 4,
+    marginTop: 2,
   },
   fontFallback: {
     fontFamily: undefined,
   },
+  optionText: { flex: 1 },
 });
