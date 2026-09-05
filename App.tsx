@@ -13,11 +13,11 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, !fontsLoaded && styles.fontFallback]}>
+      <Text accessibilityRole="header" style={[styles.title, !fontsLoaded && styles.fontFallback]}>
         NomNom
       </Text>
       <Text style={[styles.subtitle, !fontsLoaded && styles.fontFallback]}>
-        Find meals that fit your dietary needs.
+        A little care in every bite.
       </Text>
       <AccountTypeSelector
         value={accountType}
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.title,
-    color: colors.text,
+    color: colors.primary,
   },
   subtitle: {
     ...typography.body,

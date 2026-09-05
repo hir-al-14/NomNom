@@ -10,24 +10,35 @@ type Props = {
 };
 
 const options = [
-  { value: 'personal', label: 'Diner' },
-  { value: 'restaurant', label: 'Restaurant owner' },
+  { value: 'personal', label: 'Recovery user', detail: 'Find food that fits your recovery.' },
+  { value: 'restaurant', label: 'Restaurant owner', detail: 'Help your guests eat with confidence.' },
 ] as const;
 
 export function AccountTypeSelector({ value, onChange, fontsLoaded }: Props) {
   return (
     <View style={styles.group}>
+      <Text style={[styles.label, !fontsLoaded && styles.fontFallback]}>
+        How will you use NomNom?
+      </Text>
       {options.map((option) => (
         <Pressable
           key={option.value}
           accessibilityRole="radio"
           accessibilityLabel={option.label}
+          accessibilityHint={option.detail}
           accessibilityState={{ checked: value === option.value }}
           onPress={() => onChange(option.value)}
-          style={styles.option}
+          style={({ pressed }) => [
+            styles.option,
+            value === option.value && styles.selected,
+            pressed && { opacity: 0.75 },
+          ]}
         >
           <Text style={[styles.label, !fontsLoaded && styles.fontFallback]}>
-            {option.label}{value === option.value ? ' · Selected' : ''}
+            {value === option.value ? '●  ' : '○  '}{option.label}
+          </Text>
+          <Text style={[styles.detail, !fontsLoaded && styles.fontFallback]}>
+            {option.detail}
           </Text>
         </Pressable>
       ))}
@@ -38,19 +49,31 @@ export function AccountTypeSelector({ value, onChange, fontsLoaded }: Props) {
 const styles = StyleSheet.create({
   group: {
     width: '100%',
+    maxWidth: 480,
     gap: spacing.textGap,
     marginTop: spacing.screenPadding,
   },
   option: {
     minHeight: 48,
-    padding: spacing.textGap,
+    padding: 18,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.textMuted,
+    borderColor: colors.border,
     borderRadius: 16,
   },
   label: {
     ...typography.body,
     color: colors.text,
+  },
+  selected: {
+    backgroundColor: colors.selected,
+    borderColor: colors.primary,
+  },
+  detail: {
+    ...typography.body,
+    fontSize: 13,
+    color: colors.textMuted,
+    marginTop: 4,
   },
   fontFallback: {
     fontFamily: undefined,

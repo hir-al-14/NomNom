@@ -1,7 +1,11 @@
 export const colors = {
-  background: '#FFFFFF',
-  text: '#0A2533',
-  textMuted: '#48525F',
+  background: '#FFF9F3',
+  text: '#302B27',
+  textMuted: '#71645A',
+  surface: '#FFFFFF',
+  primary: '#963B2E',
+  selected: '#FCEAE2',
+  border: '#E6D8CB',
 } as const;
 
 export const spacing = {
