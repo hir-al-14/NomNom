@@ -3,10 +3,13 @@ import { useFonts } from 'expo-font';
 import { Manrope_400Regular } from '@expo-google-fonts/manrope/400Regular';
 import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
 import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { AccountTypeSelector, type AccountType } from './src/components/AccountTypeSelector';
 import { colors, spacing, typography } from './src/theme';
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Manrope_400Regular, Manrope_700Bold });
+  const [accountType, setAccountType] = useState<AccountType>('personal');
 
   return (
     <View style={styles.container}>
@@ -16,6 +19,11 @@ export default function App() {
       <Text style={[styles.subtitle, !fontsLoaded && styles.fontFallback]}>
         Find meals that fit your dietary needs.
       </Text>
+      <AccountTypeSelector
+        value={accountType}
+        onChange={setAccountType}
+        fontsLoaded={fontsLoaded}
+      />
       <StatusBar style="dark" />
     </View>
   );
