@@ -10,8 +10,8 @@ type Props = {
 };
 
 const options = [
-  { value: 'personal', label: 'Recovery user', detail: 'Find food that fits your recovery.' },
-  { value: 'restaurant', label: 'Restaurant owner', detail: 'Help your guests eat with confidence.' },
+  { value: 'personal', label: 'For myself', detail: 'Find food that fits your recovery.' },
+  { value: 'restaurant', label: 'For my restaurant', detail: 'Help your guests eat with confidence.' },
 ] as const;
 
 export function AccountTypeSelector({ value, onChange, fontsLoaded }: Props) {
