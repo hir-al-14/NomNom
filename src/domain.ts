@@ -34,8 +34,9 @@ export type CartItem = { dishId: string; quantity: number };
 export type DemoOrder = {
   id: string;
   placedAt: string;
-  items: { name: string; quantity: number; priceCents: number }[];
+  items: { name: string; quantity: number; priceCents: number; restaurantId?: string }[];
   totalCents: number;
+  status?: 'new' | 'ready';
 };
 
 export function money(cents: number) {
@@ -57,4 +58,14 @@ export function customRestrictionTag(value: string): RestrictionTag | null {
   if (!label || label.length > 80) return null;
   const preset = restrictionOptions.find((option) => option.tag === label || option.label.toLowerCase() === label);
   return preset?.tag ?? `custom:${label}`;
+}
+
+export function parseFoodNote(raw: string): { name: string; restrictions: Restriction[] } {
+  if (raw.length > 16000) throw new Error('This QR code is too large.');
+  const value = JSON.parse(raw);
+  if (value?.app !== 'nomnom' || value.version !== 1 || typeof value.name !== 'string'
+    || value.name.length > 80 || !Array.isArray(value.restrictions) || value.restrictions.length > 100
+    || value.restrictions.some((item: Restriction) => !item || !isRestrictionTag(item.tag)
+      || !['low', 'medium', 'high'].includes(item.severity))) throw new Error('This is not a valid NomNom Food-note.');
+  return { name: value.name, restrictions: value.restrictions.map(({ tag, severity }: Restriction) => ({ tag, severity })) };
 }
