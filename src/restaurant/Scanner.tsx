@@ -14,6 +14,7 @@ export function Scanner() {
   const { navigate, store } = useOwner();
   const [permission, requestPermission] = useCameraPermissions();
   const [note, setNote] = useState<ReturnType<typeof parseFoodNote> | null>(null);
+  const [cameraKey, setCameraKey] = useState(0);
   const [error, setError] = useState('');
   const [active, setActive] = useState(AppState.currentState === 'active');
   const locked = useRef(false);
@@ -27,7 +28,7 @@ export function Scanner() {
     try { setNote(parseFoodNote(raw)); setError(''); }
     catch { setError('This is not a valid NomNom Food-note. Try another QR code.'); }
   }
-  function reset() { setNote(null); setError(''); locked.current = false; }
+  function reset() { setNote(null); setError(''); locked.current = false; setCameraKey((key) => key + 1); }
   if (!permission?.granted) return <Screen>
     <Header title="Scan Food-note" onBack={() => navigate('profile')} />
     <Body>Use your camera to read a guest’s Food-note QR code.</Body>
@@ -52,7 +53,7 @@ export function Scanner() {
   </Screen>;
   return <View style={s.page}>
     <StatusBar style="light" />
-    {active && <CameraView style={{ flex: 1 }} facing="back" barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+    {active && <CameraView key={cameraKey} style={{ flex: 1 }} facing="back" autofocus="on" barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
       onBarcodeScanned={({ data }) => scan(data)} onMountError={() => setError('Camera could not start. Check permissions and reopen the scanner.')} />}
     <SafeAreaView pointerEvents="box-none" style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
       <Text style={[s.heroTitle, { textAlign: 'center', padding: 20, backgroundColor: '#00000044' }]}>Scan Food-note</Text>
