@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import { AppState, Linking, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { Card, Header, Pill } from '../components/Primitives';
+import { Header } from '../components/Primitives';
+import { FoodNoteCard } from '../components/FoodNoteCard';
 import { Action, Body, Screen } from '../components/ui';
-import { parseFoodNote, restrictionLabel } from '../domain';
+import { parseFoodNote } from '../domain';
 import { matchDish } from '../matching';
 import { useOwner } from './context';
 import { ownerStyles as s } from './styles';
@@ -40,10 +41,7 @@ export function Scanner() {
   </Screen>;
   if (note) return <Screen>
     <Header title="Customer Food-note" onBack={reset} />
-    <Card><Text style={s.small}>Customer name</Text><Text style={s.title}>{note.name || 'Name not provided'}</Text></Card>
-    <Text style={s.title}>Dietary restrictions</Text>
-    {!note.restrictions.length && <Body>No dietary restrictions selected.</Body>}
-    {note.restrictions.map(({ tag, severity }, index) => <Pill key={`${tag}-${index}`} tone={severity}>{restrictionLabel(tag)} · {severity}</Pill>)}
+    <FoodNoteCard name={note.name} restrictions={note.restrictions} />
     <Text style={s.title}>Your menu</Text>
     {store.data.dishes.map((dish) => <Pressable key={dish.id} onPress={() => navigate('dish', dish.id)} accessibilityRole="button" style={s.menuRow}>
       <View style={{ flex: 1 }}><Text style={s.menuName}>{dish.name}</Text><Body>{matchDish(dish, note.restrictions).label}</Body></View>
