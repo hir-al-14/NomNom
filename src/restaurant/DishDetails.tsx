@@ -1,6 +1,7 @@
 import { Beef, Droplet, Flame, Wheat } from 'lucide-react-native';
 import { Pressable, Switch, Text, TextInput, View } from 'react-native';
-import { DesignPhoto } from '../components/DesignPhoto';
+import { DishPhoto } from '../components/DishPhoto';
+import { dishCategories } from '../domain';
 import { colors } from '../theme';
 import type { MenuDish } from './types';
 import { ownerStyles as s } from './styles';
@@ -24,13 +25,19 @@ export function DishDetails({ dish, price, setPrice, onChange }: {
       onChangeText={(name) => onChange({ ...dish, name })} style={s.input} />
     <TextInput accessibilityLabel="Dish description" placeholder="Description" value={dish.description} multiline maxLength={500}
       onChangeText={(description) => onChange({ ...dish, description })} style={s.input} />
+    <Text style={s.small}>Category</Text>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+      {dishCategories.map((category) => <Pressable key={category} accessibilityRole="radio"
+        accessibilityState={{ checked: dish.category === category }} onPress={() => onChange({ ...dish, category })}
+        style={[s.chip, dish.category === category && { backgroundColor: colors.paleTeal }]}><Text style={s.small}>{category}</Text></Pressable>)}
+    </View>
     <Text style={s.small}>Price ($)</Text><TextInput accessibilityLabel="Price in dollars" value={price} onChangeText={setPrice}
       keyboardType="decimal-pad" style={s.input} />
-    <Text style={s.small}>Photo</Text><View style={s.row}>
-      {(['toast', 'cupcake', 'latte'] as const).map((photo) => <Pressable key={photo} accessibilityRole="radio"
+    <Text style={s.small}>Photo</Text><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+      {(['toast', 'cupcake', 'latte', 'rice-bowl', 'tomato-soup', 'avocado-toast', 'seasonal-special'] as const).map((photo) => <Pressable key={photo} accessibilityRole="radio"
         accessibilityLabel={`${photo} photo`} accessibilityState={{ checked: dish.photo === photo }}
         onPress={() => onChange({ ...dish, photo })} style={{ borderWidth: 2, padding: 2, borderRadius: 14,
-          borderColor: dish.photo === photo ? colors.teal : 'transparent' }}><DesignPhoto photo={photo} width={70} height={60} /></Pressable>)}
+          borderColor: dish.photo === photo ? colors.teal : 'transparent' }}><DishPhoto dish={{ ...dish, photo } as MenuDish} width={70} height={70} /></Pressable>)}
     </View>
     <Text style={s.small}>Nutrition per serving (leave blank if unknown)</Text>
     {(Object.keys(dish.nutrition) as (keyof MenuDish['nutrition'])[]).map((key) => <TextInput key={key}
