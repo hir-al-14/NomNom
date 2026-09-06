@@ -1,12 +1,13 @@
 import { Minus,Plus,Square,SquareCheck } from 'lucide-react-native';
 import { useState } from 'react';
-import { Pressable,StyleSheet,Text,View } from 'react-native';
+import { Alert,Pressable,StyleSheet,Text,View } from 'react-native';
 import { Header,IconButton,Pill } from '../components/Primitives';
-import { Body,Screen } from '../components/ui';
+import { Action,Body,Screen } from '../components/ui';
 import { initialDishes,restaurants } from '../demo/menu';
 import { money } from '../domain';
 import { matchDish } from '../matching';
 import { useApp } from '../state/AppContext';
+import { localId } from '../state/types';
 import { cardShadow,colors,typography } from '../theme';
 
 export function Cart() {
@@ -17,6 +18,33 @@ export function Cart() {
   function quantity(id: string, delta: number) {
     update((current) => ({ ...current, cart: current.cart.map((item) => item.dishId === id
       ? { ...item, quantity: Math.min(99, item.quantity + delta) } : item).filter((item) => item.quantity > 0) }));
+  }
+  function placeOrder() {
+    if (!selected.length) return;
+    const complete = () => {
+      const id = localId();
+      const createdAt = new Date().toISOString();
+      const items = selected.flatMap((item) => {
+        const dish = initialDishes.find((entry) => entry.id === item.dishId);
+        return dish ? [{ name: dish.name, quantity: item.quantity, priceCents: dish.priceCents }] : [];
+      });
+      update((current) => ({ ...current, cart: current.cart.filter((item) => !selected.some((entry) => entry.dishId === item.dishId)),
+        orders: [{ id, placedAt: createdAt, items, totalCents: total }, ...current.orders],
+        notifications: [{ id, title: 'Demo order placed', body: `${items.reduce((sum, item) => sum + item.quantity, 0)} items · ${money(total)}. No restaurant was charged or notified.`, createdAt, read: false }, ...current.notifications] }));
+      Alert.alert('Demo order saved', 'This order is saved on your device. No payment or restaurant order was sent.', [
+        { text: 'View activity', onPress: () => navigate('notifications') },
+      ]);
+    };
+    const flagged = selected.flatMap((item) => {
+      const dish = initialDishes.find((entry) => entry.id === item.dishId);
+      if (!dish) return [];
+      const status = matchDish(dish, data.restrictions).status;
+      return status === 'conflict' || status === 'unknown' ? [dish.name] : [];
+    });
+    if (flagged.length) Alert.alert('Review dietary details', `${flagged.join(', ')} have conflicts or incomplete information.`, [
+      { text: 'Review cart', style: 'cancel' }, { text: 'Place demo order', onPress: complete },
+    ]);
+    else complete();
   }
   return <Screen>
     <Header title="Cart" onBack={() => navigate('home')} />
@@ -52,6 +80,8 @@ export function Cart() {
       </View>;
     })}
     <View style={styles.subtotal}><Text style={styles.totalLabel}>Subtotal</Text><Text style={styles.total}>{money(total)}</Text></View>
+    <Action label="Place demo order" disabled={!selected.length} onPress={placeOrder} />
+    <Body>Demo checkout · No payment or approval step.</Body>
   </Screen>;
 }
 
