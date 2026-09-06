@@ -27,3 +27,9 @@ Use two accounts: edit a dish as owner, find it as customer, send a message, pla
 Show the customer Food-note QR on a second device and scan in restaurant mode. The result shows the customer name, custom restrictions, and severity. Test search, cuisine, price, and dietary filters. There are no top recommendations.
 
 Camera scanning requires a physical phone. Care-buddy invitations/push alerts and cross-device read markers are not implemented.
+
+## Expanded menus and conversations
+
+After the original setup, apply migrations `011`, `012`, then `expand-catalog.sql`. This adds dish categories, restaurant photo choices, six more dietary tags, and private conversations opened from orders. The catalog contains six restaurants and 25 dishes. Prices and owner-edited recipes are preserved; sample recipes are illustrative, not verified restaurant claims. Nutrition is left blank when unknown.
+
+Restaurant mode opens a chooser before the individual profile. Both owner and customer menus use the same categories and images. Home uses horizontal restaurant cards; Search combines dietary choices, saved needs, cuisine, and price. New categories or photos require migration `011` before saving. Order conversations require `012`.
