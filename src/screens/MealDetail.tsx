@@ -25,7 +25,7 @@ export function MealDetail() {
   const details = dish as Partial<MenuDish>;
   return <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 24 }}>
     <StatusBar style="light" />
-    <DishPhoto dish={dish} height={280} />
+    <DishPhoto dish={dish} height={200} fitWidth />
     <View style={[styles.heroBar, { top: insets.top }]}>
       <IconButton Icon={ArrowLeft} label="Back to restaurant" color="white" onPress={() => navigate('restaurant', dish.restaurantId)} />
       <IconButton Icon={ShoppingCart} label="View cart" color="white" onPress={() => navigate('cart')} />
