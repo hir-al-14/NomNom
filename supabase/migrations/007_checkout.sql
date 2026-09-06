@@ -11,6 +11,8 @@ begin
   select array_agg(id) into ids from public.orders o where o.customer_id = auth.uid() and o.request_key = place_orders.request_key;
   if ids is not null then return ids; end if;
   ids := '{}';
+  perform d.id from jsonb_array_elements(items) i join public.dishes d on d.id = i->>'dishId'
+    join public.restaurants r on r.id = d.restaurant_id for share of d, r;
   if exists(select 1 from jsonb_array_elements(items) i left join public.dishes d on d.id = i->>'dishId'
     left join public.restaurants r on r.id = d.restaurant_id where d.id is null or not d.available or not r.published
       or (i->>'quantity')::numeric not between 1 and 99 or (i->>'quantity')::numeric <> trunc((i->>'quantity')::numeric)
