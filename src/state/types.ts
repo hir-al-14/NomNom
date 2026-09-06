@@ -16,6 +16,7 @@ export type Message = {
   restaurantId: string;
   body: string;
   createdAt: string;
+  sender?: 'customer' | 'restaurant';
 };
 
 export type UserData = {
