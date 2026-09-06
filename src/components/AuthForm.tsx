@@ -31,9 +31,11 @@ export function AuthForm({ accountType }: { accountType: AccountType }) {
         style={({ pressed }) => [styles.button, (pressed || auth.busy) && { opacity: 0.6 }]}
       >
         <Text style={styles.buttonText}>
-          {auth.busy ? 'Please wait…' : auth.creating ? 'Create account' : 'Log in'}
+          {auth.busy ? 'Please wait…' : auth.creating ? 'Create account'
+            : accountType === 'restaurant' ? 'Log in for my restaurant' : 'Log in for myself'}
         </Text>
       </Pressable>
+      <Text style={styles.message}>One account works for both personal and restaurant mode.</Text>
       <Pressable accessibilityRole="button" onPress={auth.toggleMode} disabled={auth.busy} style={styles.link}>
         <Text style={styles.linkText}>
           {auth.creating ? 'Already have an account? Log in' : 'Don’t have an account? Sign up'}

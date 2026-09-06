@@ -12,6 +12,7 @@ import { LoginHeader } from './src/components/LoginHeader';
 import { AuthForm } from './src/components/AuthForm';
 import { useSession } from './src/hooks/useSession';
 import { supabase } from './src/lib/supabase';
+import { RestaurantWorkspace } from './src/screens/RestaurantWorkspace';
 
 function AppContent() {
   const [fontsLoaded, fontError] = useFonts({ Manrope_400Regular, Manrope_700Bold });
@@ -20,7 +21,7 @@ function AppContent() {
   const { session, loading, error } = useSession();
 
   if (session || inDemo) {
-    return <UserApp key={session?.user.id ?? 'guest'} userId={session?.user.id} onExit={async () => {
+    const onExit = async () => {
       if (session && supabase) {
         try {
           const result = await supabase.auth.signOut({ scope: 'local' });
@@ -31,7 +32,11 @@ function AppContent() {
         }
       }
       setInDemo(false);
-    }} />;
+    };
+    if (accountType === 'restaurant') return <RestaurantWorkspace email={session?.user.email}
+      onSwitch={() => setAccountType('personal')} onExit={onExit} />;
+    return <UserApp key={session?.user.id ?? 'guest'} userId={session?.user.id}
+      onSwitchMode={() => setAccountType('restaurant')} onExit={onExit} />;
   }
 
   const welcome = (

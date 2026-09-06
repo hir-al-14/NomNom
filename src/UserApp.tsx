@@ -23,9 +23,9 @@ import { Notifications } from './screens/Notifications';
 import { Chat } from './screens/Chat';
 import { colors, typography } from './theme';
 
-type Props = { userId?: string; onExit: () => void };
+type Props = { userId?: string; onExit: () => void; onSwitchMode: () => void };
 
-export function UserApp({ userId, onExit }: Props) {
+export function UserApp({ userId, onExit, onSwitchMode }: Props) {
   const { data, update, ready, error, saveProfile } = useUserData(userId);
   const [route, setRoute] = useState<Route>('home');
   const [restaurantId, setRestaurantId] = useState('demo-kitchen');
@@ -88,7 +88,7 @@ export function UserApp({ userId, onExit }: Props) {
     notifications: <Notifications />, chat: <Chat />, buddy: <CareBuddy />,
   };
   return <AppContext.Provider value={{ data, update, navigate, restaurantId, dishId,
-    saveProfile, addToCart, onExit, signedIn: !!userId }}>
+    saveProfile, addToCart, onExit, onSwitchMode, signedIn: !!userId }}>
     <View style={styles.app}>
       <StatusBar style="dark" />
       {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}

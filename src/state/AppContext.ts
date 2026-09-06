@@ -11,6 +11,7 @@ export type AppContextValue = {
   saveProfile: (name: string, restrictions: Restriction[]) => Promise<void>;
   addToCart: (dishId: string) => void;
   onExit: () => void;
+  onSwitchMode: () => void;
   signedIn: boolean;
 };
 

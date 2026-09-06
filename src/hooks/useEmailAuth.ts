@@ -28,7 +28,7 @@ export function useEmailAuth(accountType: AccountType) {
     try {
       const result = creating
         ? await supabase.auth.signUp({
-          email: address, password, options: { data: { account_type: accountType } },
+          email: address, password, options: { data: { preferred_mode: accountType } },
         })
         : await supabase.auth.signInWithPassword({ email: address, password });
       if (result.error) throw result.error;
