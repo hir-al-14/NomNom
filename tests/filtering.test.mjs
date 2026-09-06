@@ -16,3 +16,13 @@ test('dietary filtering excludes conflicts, unknowns, and empty profiles', () =>
   }
   assert.equal(filterRestaurants(restaurants, dishes, [{ tag: 'dairy' }], { ...filters, dietary: true }).length, 1);
 });
+
+test('all selected restrictions and price must match one dish', () => {
+  const menu = [
+    { ...dishes[0], priceCents: 700, flags: ['sesame'] },
+    { ...dishes[0], priceCents: 1400, flags: [] },
+  ];
+  const needs = [{ tag: 'sesame', severity: 'high' }, { tag: 'soy', severity: 'high' }];
+  assert.equal(filterRestaurants(restaurants, menu, needs, { ...filters, dietary: true, maxPrice: 1000 }).length, 0);
+  assert.equal(filterRestaurants(restaurants, menu, needs, { ...filters, dietary: true, maxPrice: 1500 }).length, 1);
+});

@@ -1,6 +1,6 @@
 import { useCatalog } from '../state/CatalogContext';
 import { Search as SearchIcon,ShoppingCart,Sun } from 'lucide-react-native';
-import { Pressable,Text,View } from 'react-native';
+import { Pressable,ScrollView,Text,View } from 'react-native';
 import { IconButton,Section } from '../components/Primitives';
 import { Body,Screen } from '../components/ui';
 import { useApp } from '../state/AppContext';
@@ -29,7 +29,10 @@ export function Home() {
     <View style={styles.sectionRow}><Section>Restaurants</Section>
       <Pressable accessibilityRole="button" onPress={() => navigate('search')}><Text style={styles.seeAll}>Search & filter</Text></Pressable>
     </View>
-    <View style={styles.grid}>{restaurants.map((restaurant) => <RestaurantCard key={restaurant.id} restaurant={restaurant} grid />)}</View>
+    {[restaurants.filter((_, index) => index % 2 === 0), restaurants.filter((_, index) => index % 2 === 1)].filter((row) => row.length).map((row, index) =>
+      <ScrollView key={index} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
+        {row.map((restaurant) => <RestaurantCard key={restaurant.id} restaurant={restaurant} />)}
+      </ScrollView>)}
     {!restaurants.length && <Body>No restaurant menus yet. Add your restaurant in restaurant mode.</Body>}
   </Screen>;
 }
