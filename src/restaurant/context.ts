@@ -8,6 +8,7 @@ export type OwnerContextValue = {
   user: ReturnType<typeof useUserData>;
   navigate: (route: OwnerRoute, id?: string) => void;
   dishId: string;
+  threadId: string;
   onSwitch: () => void;
   onExit: () => void;
 };

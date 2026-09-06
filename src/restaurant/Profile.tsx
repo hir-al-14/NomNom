@@ -8,7 +8,7 @@ import { useOwner } from './context';
 import { ownerStyles as s } from './styles';
 
 export function OwnerProfile() {
-  const { store: { data }, navigate } = useOwner();
+  const { store: { data, cloud }, navigate } = useOwner();
   const insets = useSafeAreaInsets();
   return <ScrollView style={s.page}>
     <StatusBar style="light" />
@@ -19,10 +19,10 @@ export function OwnerProfile() {
       <IconButton Icon={SquarePen} label="Edit restaurant" color="white" onPress={() => navigate('editProfile')} />
     </View>
     <View style={s.content}>
-      <Text style={s.name}>{data.profile.name}</Text><Text style={s.subtitle}>{data.profile.cuisine}</Text>
+      <Text style={s.name}>{data.profile.name || 'Your restaurant'}</Text><Text style={s.subtitle}>{data.profile.cuisine}</Text>
       <Text style={[s.small, { textAlign: 'center' }]}>{data.profile.address}</Text>
       <View style={[s.row, { justifyContent: 'center' }]}>
-        {['Demo restaurant', data.profile.hours].filter(Boolean).map((label) => <View key={label} style={s.chip}><Text style={s.small}>{label}</Text></View>)}
+        {[cloud ? 'Restaurant menu' : 'Demo restaurant', data.profile.hours].filter(Boolean).map((label) => <View key={label} style={s.chip}><Text style={s.small}>{label}</Text></View>)}
       </View>
       <View style={s.divider} />
       <View style={s.row}><Text style={s.title}>Menu items</Text>

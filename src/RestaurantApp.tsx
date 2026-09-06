@@ -17,6 +17,7 @@ type Props = Pick<OwnerContextValue, 'store' | 'user' | 'onSwitch' | 'onExit'>;
 export function RestaurantApp({ store, user, onSwitch, onExit }: Props) {
   const [route, setRoute] = useState<OwnerRoute>('profile');
   const [dishId, setDishId] = useState('');
+  const [threadId, setThreadId] = useState('');
   const [keyboard, setKeyboard] = useState(false);
   useEffect(() => {
     const show = Keyboard.addListener('keyboardDidShow', () => setKeyboard(true));
@@ -25,10 +26,11 @@ export function RestaurantApp({ store, user, onSwitch, onExit }: Props) {
   }, []);
   function navigate(next: OwnerRoute, id?: string) {
     Keyboard.dismiss();
-    if (id) setDishId(id);
+    if (id && next === 'thread') setThreadId(id);
+    else if (id) setDishId(id);
     setRoute(next);
   }
-  return <OwnerContext.Provider value={{ store, user, navigate, dishId, onSwitch, onExit }}>
+  return <OwnerContext.Provider value={{ store, user, navigate, dishId, threadId, onSwitch, onExit }}>
     <View style={s.page}>
       <StatusBar style="dark" />
       {!!store.error && <Text style={[s.error, { padding: 24 }]}>{store.error}</Text>}
@@ -42,7 +44,7 @@ export function RestaurantApp({ store, user, onSwitch, onExit }: Props) {
         {route === 'scan' && <Scanner />}
         {route === 'settings' && <Screen>
           <Header title="Settings" onBack={() => navigate('profile')} />
-          <Body>This restaurant workspace is a local demo. Menu edits, replies, and order activity are shared between modes on this device.</Body>
+          <Body>{store.cloud ? 'Menus, messages, and orders are synced with your account.' : 'This restaurant workspace is a local demo on this device.'}</Body>
           <Action label="Switch to personal mode" onPress={onSwitch} />
           <Action label="Log out / exit demo" onPress={onExit} />
         </Screen>}
