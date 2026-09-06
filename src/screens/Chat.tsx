@@ -1,3 +1,4 @@
+import { useCatalog } from '../state/CatalogContext';
 import { Send } from 'lucide-react-native';
 import { useEffect,useRef,useState } from 'react';
 import { Image,KeyboardAvoidingView,Platform,Pressable,ScrollView,Text,TextInput,View } from 'react-native';
@@ -5,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../components/Primitives';
 import { Body, Screen } from '../components/ui';
 import { restaurantImages } from '../demo/images';
-import { restaurants } from '../demo/menu';
 import { useApp } from '../state/AppContext';
 import { localId } from '../state/types';
 import { colors } from '../theme';
@@ -13,6 +13,7 @@ import { colors } from '../theme';
 import { styles,time } from './ActivityShared';
 
 export function Chat() {
+  const { restaurants } = useCatalog();
   const { data, update, restaurantId, navigate } = useApp();
   const restaurant = restaurants.find((item) => item.id === restaurantId);
   const [draft, setDraft] = useState('');
@@ -40,10 +41,10 @@ export function Chat() {
       <View style={styles.chatHeader}><Header title={restaurant.name} onBack={() => navigate('chat')} /></View>
       <ScrollView ref={scroll} contentContainerStyle={styles.conversation}
         onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}>
-        <Text style={styles.demo}>Demo conversation · Messages are saved on this device, not delivered to a restaurant.</Text>
+        <Text style={styles.demo}>{restaurant.id === 'window' ? 'Demo conversation · Switch to restaurant mode to reply on this device.' : 'Demo conversation · Messages are saved on this device, not delivered to a restaurant.'}</Text>
         {!messages.length && <Body>Ask about ingredients or how a dish is prepared.</Body>}
-        {messages.map((message) => <View key={message.id} style={styles.messageWrap}>
-          <View style={styles.bubble}><Text style={styles.message}>{message.body}</Text></View>
+        {messages.map((message) => <View key={message.id} style={[styles.messageWrap, message.sender === 'restaurant' && { alignItems: 'flex-start' }]}>
+          <View style={[styles.bubble, message.sender === 'restaurant' && { backgroundColor: 'white' }]}><Text style={styles.message}>{message.body}</Text></View>
           <Text style={styles.timestamp}>{time(message.createdAt)}</Text>
         </View>)}
       </ScrollView>
