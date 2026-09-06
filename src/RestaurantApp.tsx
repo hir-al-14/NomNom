@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Keyboard, Text, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Action, Body, Screen } from './components/ui';
 import { Header } from './components/Primitives';
 import { OwnerContext, type OwnerContextValue, type OwnerRoute } from './restaurant/context';
+import { YourRestaurants } from './restaurant/YourRestaurants';
 import { OwnerProfile } from './restaurant/Profile';
 import { EditRestaurantProfile } from './restaurant/EditProfile';
 import { DishEditor } from './restaurant/DishEditor';
@@ -15,7 +16,7 @@ import { ownerStyles as s } from './restaurant/styles';
 
 type Props = Pick<OwnerContextValue, 'store' | 'user' | 'onSwitch' | 'onExit'>;
 export function RestaurantApp({ store, user, onSwitch, onExit }: Props) {
-  const [route, setRoute] = useState<OwnerRoute>('profile');
+  const [route, setRoute] = useState<OwnerRoute>('restaurants');
   const [dishId, setDishId] = useState('');
   const [threadId, setThreadId] = useState('');
   const [keyboard, setKeyboard] = useState(false);
@@ -30,11 +31,13 @@ export function RestaurantApp({ store, user, onSwitch, onExit }: Props) {
     else if (id) setDishId(id);
     setRoute(next);
   }
+  if (!store.ready) return <View style={[s.page, { justifyContent: 'center' }]}><ActivityIndicator /></View>;
   return <OwnerContext.Provider value={{ store, user, navigate, dishId, threadId, onSwitch, onExit }}>
     <View style={s.page}>
       <StatusBar style="dark" />
       {!!store.error && <Text style={[s.error, { padding: 24 }]}>{store.error}</Text>}
-      <View key={`${route}:${dishId}`} style={s.page}>
+      <View key={`${route}:${dishId}:${store.data.profile.id}`} style={s.page}>
+        {route === 'restaurants' && <YourRestaurants />}
         {route === 'profile' && <OwnerProfile />}
         {route === 'editProfile' && <EditRestaurantProfile />}
         {route === 'dish' && <DishEditor />}
@@ -49,7 +52,7 @@ export function RestaurantApp({ store, user, onSwitch, onExit }: Props) {
           <Action label="Log out / exit demo" onPress={onExit} />
         </Screen>}
       </View>
-      {!keyboard && !['dish', 'editProfile'].includes(route) && <OwnerNavigation route={route} />}
+      {!keyboard && !['restaurants', 'dish', 'editProfile'].includes(route) && <OwnerNavigation route={route} />}
     </View>
   </OwnerContext.Provider>;
 }

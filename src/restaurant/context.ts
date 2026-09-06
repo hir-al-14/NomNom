@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 import type { useUserData } from '../state/useUserData';
 import type { useRestaurantData } from './useRestaurantData';
 
-export type OwnerRoute = 'profile' | 'editProfile' | 'dish' | 'chat' | 'thread' | 'scan' | 'orders' | 'settings';
+export type OwnerRoute = 'restaurants' | 'profile' | 'editProfile' | 'dish' | 'chat' | 'thread' | 'scan' | 'orders' | 'settings';
 export type OwnerContextValue = {
   store: ReturnType<typeof useRestaurantData>;
   user: ReturnType<typeof useUserData>;

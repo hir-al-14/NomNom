@@ -15,7 +15,7 @@ export function Workspace({ userId, mode, onSwitch, onExit }: {
   const user = useUserData(userId);
   const restaurant = useRestaurantData(userId);
   const remote = useCatalogData(userId, restaurant.data);
-  if (!restaurant.ready || !user.ready) return <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'white' }}>
+  if (!user.ready) return <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'white' }}>
     <ActivityIndicator color={colors.teal} />
   </View>;
   return <CatalogContext.Provider value={{

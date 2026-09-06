@@ -10,7 +10,7 @@ export function useRestaurantData(userId?: string) {
     ? { profile: { id: `restaurant:${userId}`, name: '', cuisine: '', address: '', hours: '' }, dishes: [] }
     : restaurantSeed());
   const [ready, setReady] = useState(false);
-  const [selectedId, selectRestaurant] = useState<string>();
+  const [selectedId, setSelectedId] = useState<string>();
   const [choices, setChoices] = useState<RestaurantData['profile'][]>([]);
   const [error, setError] = useState('');
   const latest = useRef(data);
@@ -45,9 +45,13 @@ export function useRestaurantData(userId?: string) {
         version.current = result.data;
       } else await AsyncStorage.setItem(key, JSON.stringify(next));
       latest.current = next; setData(next);
+      setChoices((current) => [...current.filter((item) => item.id !== next.profile.id), next.profile]);
     });
     writes.current = operation.catch(() => {});
     return operation;
+  }
+  function selectRestaurant(id: string) {
+    if (id !== selectedId) { setReady(false); setSelectedId(id); }
   }
   return { data, ready, error, save, cloud: !!userId, choices, selectRestaurant };
 }

@@ -13,7 +13,7 @@ export function OwnerNavigation({ route }: { route: OwnerRoute }) {
     <View style={{ ...cardShadow, backgroundColor: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
       flexDirection: 'row', paddingTop: 12, paddingBottom: Math.max(12, insets.bottom), flexShrink: 0 }}>
       {([{ id: 'scan', label: 'Scan Food-note', Icon: Camera }, { id: 'menu', label: 'Menu', Icon: ChefHat },
-        { id: 'profile', label: 'Restaurant profile', Icon: UserRound }] as const).map(({ id, label, Icon }) => <Pressable
+        { id: 'restaurants', label: 'Your restaurants', Icon: UserRound }] as const).map(({ id, label, Icon }) => <Pressable
         key={id} accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: route === id }}
         onPress={() => navigate(id === 'menu' ? 'profile' : id)} style={{ flex: 1, minHeight: 52, alignItems: 'center', justifyContent: 'center' }}>
         <View style={id === 'menu' ? { ...cardShadow, backgroundColor: colors.deepTeal, width: 64, height: 64,
