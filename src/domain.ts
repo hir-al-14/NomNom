@@ -36,7 +36,7 @@ export type DemoOrder = {
   placedAt: string;
   items: { name: string; quantity: number; priceCents: number; restaurantId?: string }[];
   totalCents: number;
-  status?: 'new' | 'ready';
+  readyRestaurantIds?: string[];
 };
 
 export function money(cents: number) {

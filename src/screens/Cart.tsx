@@ -1,9 +1,9 @@
+import { useCatalog } from '../state/CatalogContext';
 import { Minus,Plus,Square,SquareCheck } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert,Pressable,StyleSheet,Text,View } from 'react-native';
 import { Header,IconButton,Pill } from '../components/Primitives';
 import { Action,Body,Screen } from '../components/ui';
-import { initialDishes,restaurants } from '../demo/menu';
 import { money } from '../domain';
 import { matchDish } from '../matching';
 import { useApp } from '../state/AppContext';
@@ -11,6 +11,7 @@ import { localId } from '../state/types';
 import { cardShadow,colors,typography } from '../theme';
 
 export function Cart() {
+  const { restaurants, dishes: initialDishes } = useCatalog();
   const { data, update, navigate } = useApp();
   const [excluded, setExcluded] = useState<string[]>([]);
   const selected = data.cart.filter((item) => !excluded.includes(item.dishId));
@@ -26,7 +27,7 @@ export function Cart() {
       const createdAt = new Date().toISOString();
       const items = selected.flatMap((item) => {
         const dish = initialDishes.find((entry) => entry.id === item.dishId);
-        return dish ? [{ name: dish.name, quantity: item.quantity, priceCents: dish.priceCents }] : [];
+        return dish ? [{ name: dish.name, quantity: item.quantity, priceCents: dish.priceCents, restaurantId: dish.restaurantId }] : [];
       });
       update((current) => ({ ...current, cart: current.cart.filter((item) => !selected.some((entry) => entry.dishId === item.dishId)),
         orders: [{ id, placedAt: createdAt, items, totalCents: total }, ...current.orders],
