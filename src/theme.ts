@@ -9,6 +9,14 @@ export const colors = {
   accent: '#F7A8AD',
   divider: '#FDE2E3',
   link: '#4DA2EC',
+  teal: '#68B6BC',
+  deepTeal: '#042628',
+  mutedIcon: '#97A5B9',
+  paleTeal: '#E1EEF0',
+  tabs: '#E6EBF2',
+  high: '#EB7B7F',
+  medium: '#E48B33',
+  low: '#68B389',
 } as const;
 
 export const spacing = {
@@ -17,6 +25,11 @@ export const spacing = {
 } as const;
 
 export const typography = {
+  section: {
+    fontSize: 20,
+    lineHeight: 26,
+    fontFamily: 'Manrope_700Bold',
+  },
   title: {
     fontSize: 36,
     fontFamily: 'Manrope_700Bold',
@@ -26,4 +39,12 @@ export const typography = {
     fontSize: 16,
     lineHeight: 24,
   },
+} as const;
+
+export const cardShadow = {
+  shadowColor: '#063336',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 8,
+  elevation: 3,
 } as const;

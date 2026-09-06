@@ -5,7 +5,7 @@ import { colors, spacing, typography } from '../theme';
 
 export function Screen({ children }: PropsWithChildren) {
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.column}>{children}</View>
       </ScrollView>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { flexGrow: 1, padding: spacing.screenPadding },
   column: { width: '100%', maxWidth: 480, alignSelf: 'center', gap: 20 },
-  heading: { ...typography.title, color: colors.text, fontSize: 28 },
+  heading: { ...typography.title, color: colors.text, fontSize: 24 },
   body: { ...typography.body, color: colors.textMuted },
   button: {
     backgroundColor: colors.primary,
