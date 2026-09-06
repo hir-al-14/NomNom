@@ -1,36 +1,20 @@
-# Connect the live backend
+# Set up NomNom data
 
-The phone reads restaurant-entered menus from Supabase. Nutritionix and Spoonacular results are fetched through `food-lookup` and held only in memory; they are never inserted into menu tables. API items cannot be ordered without a restaurant supplying its own menu and price.
+Signed-in screens load restaurants and dishes from Supabase. The existing sample catalog is imported once using `seed.sql`; later edits come from the database. External food APIs are removed. Guest mode remains an offline preview.
 
-## Database
+## Database setup
 
-Run migrations `001` through `009` in order in the Supabase SQL Editor, skipping migrations you have already applied. `001` and `002` are the earlier profile setup; `003` onward adds restaurant menus, private chat, orders, preferences, and API rate limits.
+Run migrations `001` through `010` in order in the Supabase SQL Editor, skipping ones already applied. Migration `010` allows one account to manage several restaurants and removes the unused lookup counters. Keep earlier migration files for existing project history.
 
-Alternatively, use the Supabase CLI after linking this project. Do not apply the same migrations again through a second method without reconciling migration history.
+Sign up for the owner account in NomNom first. In the same SQL Editor query, put this line before the contents of `seed.sql`, substituting the owner email:
 
-Restaurant owners can edit only their own menus. Customers can read published menus. Messages and orders are visible only to the customer and the restaurant owner. Checkout calculates prices on the server and deduplicates retries. Menu saves reject stale versions to prevent another device's edits being overwritten.
-
-## API keys
-
-In Supabase → Edge Functions → Secrets, add:
-
-- `NUTRITIONIX_APP_ID`
-- `NUTRITIONIX_APP_KEY`
-- `SPOONACULAR_API_KEY`
-
-Do not put these in Expo's `EXPO_PUBLIC_*` environment variables. Obtain credentials from [Nutritionix](https://developer.nutritionix.com/) and [Spoonacular](https://spoonacular.com/food-api/console).
-
-Deploy the `food-lookup` function from this folder using the Supabase CLI:
-
-```sh
-npx supabase login
+```sql
+select set_config('nomnom.seed_owner_email', 'YOUR_OWNER_EMAIL', false);
 ```
 
-```sh
-npx supabase functions deploy food-lookup --project-ref zalyrluedlvhgovsrscz
-```
+The import adds four restaurants and seven dishes from the previous frontend. Existing records are not overwritten. Luigino’s and Sokyo have no dishes yet, matching the previous catalog. All imported restaurants belong to the selected account. Restaurant mode opens Window Coffee Bar first and offers a selector for the other menus.
 
-`verify_jwt = false` disables gateway verification for compatibility with current keys; the function itself validates the bearer token using `auth.getUser()` before any lookup. Rate limits store counts only. API errors and missing keys appear as messages in the app.
+Only owners can edit their menus. Customers can browse published menus. Chat and orders are private to their participants. Orders use server prices and deduplicate retries. There are no payments or external restaurant integrations: these are sample businesses for the project.
 
 ## Check
 
@@ -38,8 +22,8 @@ npx supabase functions deploy food-lookup --project-ref zalyrluedlvhgovsrscz
 node supabase/tests/access.mjs
 ```
 
-Use two different accounts on two devices: create a restaurant and menu, browse from the customer account, send a message, place an order, and mark it ready as the owner. Menus refresh every 15 seconds; chat and order activity refresh every 5 seconds while the app is active.
+Use two accounts: edit a dish as owner, find it as customer, send a message, place an order, then reply and mark the order ready as owner. Menus refresh every 15 seconds; messages and orders refresh every 5 seconds while active. Restart the app to verify saved profiles, restrictions, favorites, and cart.
 
-Guest mode stays a local demo. Signed-in mode uses the database and does not automatically publish demo menus. Create a restaurant name with the edit button before adding dishes. Camera scanning requires testing on a physical phone.
+Show the customer Food-note QR on a second device and scan in restaurant mode. The result shows the customer name, custom restrictions, and severity. Test search, cuisine, price, and dietary filters. There are no top recommendations.
 
-Payments, care-buddy invitations/push alerts, and cross-device read/unread markers are not implemented. Buddy contacts are private saved preferences.
+Camera scanning requires a physical phone. Care-buddy invitations/push alerts and cross-device read markers are not implemented.
