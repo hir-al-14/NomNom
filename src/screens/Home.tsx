@@ -23,7 +23,6 @@ export function Home() {
     <Pressable accessibilityRole="button" onPress={() => navigate('search')} style={styles.search}>
       <SearchIcon size={20} color={colors.border} /><Text style={styles.placeholder}>Find a meal that fits...</Text>
     </Pressable>
-    <Pressable accessibilityRole="button" onPress={() => navigate('lookup')}><Text style={styles.seeAll}>Search Nutritionix & Spoonacular →</Text></Pressable>
     {!data.restrictions.length && <Pressable accessibilityRole="button" onPress={() => navigate('profile')}>
       <Text style={styles.prompt}>Add dietary needs in Profile to personalize your meals →</Text>
     </Pressable>}
@@ -31,6 +30,6 @@ export function Home() {
       <Pressable accessibilityRole="button" onPress={() => navigate('search')}><Text style={styles.seeAll}>Search & filter</Text></Pressable>
     </View>
     <View style={styles.grid}>{restaurants.map((restaurant) => <RestaurantCard key={restaurant.id} restaurant={restaurant} grid />)}</View>
-    {!restaurants.length && <Body>No restaurant menus yet. Search food databases above, or add your restaurant in restaurant mode.</Body>}
+    {!restaurants.length && <Body>No restaurant menus yet. Add your restaurant in restaurant mode.</Body>}
   </Screen>;
 }

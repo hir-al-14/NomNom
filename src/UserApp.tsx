@@ -5,7 +5,6 @@ import { StatusBar } from 'expo-status-bar';
 import * as Speech from 'expo-speech';
 import { BottomNav, type Tab } from './components/BottomNav';
 import { FloatingActions } from './components/FloatingActions';
-import { FoodLookup } from './screens/FoodLookup';
 import { matchDish } from './matching';
 import { AppContext } from './state/AppContext';
 import { useUserData } from './state/useUserData';
@@ -59,7 +58,7 @@ export function UserApp({ userId, user, onExit, onSwitchMode }: Props) {
 
   function addToCart(id: string) {
     const dish = initialDishes.find((item) => item.id === id);
-    if (!dish || (dish.source && dish.source !== 'manual')) return;
+    if (!dish) return;
     const add = () => {
       update((current) => {
         const existing = current.cart.find((item) => item.dishId === id);
@@ -88,7 +87,7 @@ export function UserApp({ userId, user, onExit, onSwitchMode }: Props) {
     home: <Home />, search: <SearchScreen />, favorites: <FavoritesScreen />,
     restaurant: <RestaurantScreen />, dish: <MealDetail />, cart: <Cart />,
     profile: <Profile />, edit: <EditProfile />, note: <FoodNote />, settings: <Settings />,
-    notifications: <Notifications />, chat: <Chat />, buddy: <CareBuddy />, lookup: <FoodLookup />,
+    notifications: <Notifications />, chat: <Chat />, buddy: <CareBuddy />,
   };
   return <AppContext.Provider value={{ data, update, navigate, restaurantId, dishId,
     saveProfile, addToCart, onExit, onSwitchMode, signedIn: !!userId,

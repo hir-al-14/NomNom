@@ -1,3 +1,0 @@
-[functions.food-lookup]
-verify_jwt = false
-# The function validates the bearer token with auth.getUser before every lookup.

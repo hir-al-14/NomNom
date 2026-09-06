@@ -20,7 +20,7 @@ export type Dish = {
   ingredients: string[];
   flags: RestrictionTag[];
   complete: boolean;
-  source?: 'manual' | 'nutritionix' | 'spoonacular';
+  source?: 'manual';
   imageUrl?: string;
 };
 
