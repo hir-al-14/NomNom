@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DesignPhoto } from '../components/DesignPhoto';
+import { DishPhoto } from '../components/DishPhoto';
 import { IconButton } from '../components/Primitives';
 import { colors } from '../theme';
 import { localId } from '../state/types';
@@ -47,7 +47,7 @@ export function DishEditor() {
     finally { setBusy(false); }
   }
   return <ScrollView style={s.page} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
-    <StatusBar style="light" /><DesignPhoto photo={dish.photo} height={200} fitWidth />
+    <StatusBar style="light" /><DishPhoto dish={dish} height={200} fitWidth />
     <View style={[s.heroHeader, { top: insets.top }]}><View style={{ backgroundColor: 'white', borderRadius: 12 }}>
       <IconButton Icon={X} label="Close dish editor" onPress={close} />
     </View></View>

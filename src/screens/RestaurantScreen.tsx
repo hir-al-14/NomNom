@@ -18,7 +18,7 @@ export function RestaurantScreen() {
   const { restaurantId, navigate, data } = useApp();
   const [tab, setTab] = useState('Menu');
   const insets = useSafeAreaInsets();
-  const restaurant = restaurants.find((item) => item.id === restaurantId) ?? restaurants[0];
+  const restaurant = restaurants.find((item) => item.id === restaurantId);
   if (!restaurant) return <Screen><Body>No restaurant selected.</Body><Action label="Browse restaurants" onPress={() => navigate('search')} /></Screen>;
   const dishes = initialDishes.filter((dish) => dish.restaurantId === restaurant.id);
   return <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 24 }}>
@@ -42,8 +42,8 @@ export function RestaurantScreen() {
         </Pressable>
       ))}</View>
       {tab === 'Menu' && <>
-        {!dishes.length && <Body>This sample listing does not have a menu yet. Cava has a menu you can explore.</Body>}
-        {!!dishes.length && <Body>{restaurant.id === 'window' ? 'Menu items' : 'Bowls'}</Body>}
+        {!dishes.length && <Body>This restaurant has not added dishes yet.</Body>}
+        {!!dishes.length && <Body>Menu items</Body>}
         {dishes.filter((dish) => dish.id !== 'seasonal-special').map((dish) => <MenuRow key={dish.id} dish={dish} />)}
         {dishes.some((dish) => dish.id === 'seasonal-special') && <Body>Sides</Body>}
         {dishes.filter((dish) => dish.id === 'seasonal-special').map((dish) => <MenuRow key={dish.id} dish={dish} />)}

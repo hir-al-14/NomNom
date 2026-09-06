@@ -3,7 +3,7 @@ import type { PhotoKey } from '../components/DesignPhoto';
 
 export type Ingredient = { name: string; quantity: number };
 export type MenuDish = Dish & {
-  photo: PhotoKey;
+  photo: PhotoKey | 'rice-bowl' | 'tomato-soup' | 'avocado-toast' | 'seasonal-special';
   portions: Ingredient[];
   flagNotes: Record<string, string>;
   nutrition: { carbs: string; protein: string; calories: string; fat: string };

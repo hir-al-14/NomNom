@@ -103,9 +103,7 @@ export function useUserData(userId?: string) {
       const result = await supabase.rpc('save_restrictions', { items: restrictions });
       if (result.error) throw new Error('Could not save restrictions. Your edits are still here.');
     }
-    const next = { ...data, name: name.trim(), restrictions };
-    await AsyncStorage.setItem(key, JSON.stringify(next));
-    update(next);
+    update((current) => ({ ...current, name: name.trim(), restrictions }));
     setError('');
   }
   async function sendMessage(restaurantId: string, body: string) {

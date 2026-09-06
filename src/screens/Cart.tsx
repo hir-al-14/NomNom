@@ -72,7 +72,7 @@ export function Cart() {
       const items = data.cart.filter((item) => initialDishes.find((dish) => dish.id === item.dishId)?.restaurantId === restaurant.id);
       if (!items.length) return null;
       return <View key={restaurant.id} style={styles.group}>
-        <View style={styles.groupHeader}><Text style={styles.groupTitle}>{restaurant.name}  ·  Sample menu</Text></View>
+        <View style={styles.groupHeader}><Text style={styles.groupTitle}>{restaurant.name}  ·  Menu</Text></View>
         {items.map((item) => {
           const dish = initialDishes.find((entry) => entry.id === item.dishId)!;
           const match = matchDish(dish, data.restrictions);
