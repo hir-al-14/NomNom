@@ -2,16 +2,16 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { Manrope_400Regular } from '@expo-google-fonts/manrope/400Regular';
 import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { AccountTypeSelector, type AccountType } from './src/components/AccountTypeSelector';
 import { colors, spacing, typography } from './src/theme';
-import { DemoApp } from './src/demo/DemoApp';
+import { UserApp } from './src/UserApp';
 import { LoginHeader } from './src/components/LoginHeader';
 import { AuthForm } from './src/components/AuthForm';
-import { AccountScreen } from './src/screens/AccountScreen';
 import { useSession } from './src/hooks/useSession';
+import { supabase } from './src/lib/supabase';
 
 function AppContent() {
   const [fontsLoaded, fontError] = useFonts({ Manrope_400Regular, Manrope_700Bold });
@@ -19,11 +19,19 @@ function AppContent() {
   const [inDemo, setInDemo] = useState(false);
   const { session, loading, error } = useSession();
 
-  if (inDemo) {
-    return <DemoApp previewMenu={accountType === 'restaurant'} onExit={() => setInDemo(false)} />;
-  }
-  if (session) {
-    return <AccountScreen email={session.user.email ?? ''} onDemo={() => setInDemo(true)} />;
+  if (session || inDemo) {
+    return <UserApp key={session?.user.id ?? 'guest'} userId={session?.user.id} onExit={async () => {
+      if (session && supabase) {
+        try {
+          const result = await supabase.auth.signOut({ scope: 'local' });
+          if (result.error) throw result.error;
+        } catch {
+          Alert.alert('Unable to sign out', 'Please try again.');
+          return;
+        }
+      }
+      setInDemo(false);
+    }} />;
   }
 
   const welcome = (
