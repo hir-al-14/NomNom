@@ -7,7 +7,7 @@ export const restrictionOptions = [
   { tag: 'hard-texture', label: 'Soft foods' },
 ] as const;
 
-export type RestrictionTag = typeof restrictionOptions[number]['tag'];
+export type RestrictionTag = typeof restrictionOptions[number]['tag'] | `custom:${string}`;
 export type Severity = 'low' | 'medium' | 'high';
 export type Restriction = { tag: RestrictionTag; severity: Severity };
 
@@ -43,5 +43,18 @@ export function money(cents: number) {
 }
 
 export function restrictionLabel(tag: RestrictionTag) {
+  if (tag.startsWith('custom:')) return tag.slice(7);
   return restrictionOptions.find((option) => option.tag === tag)?.label ?? tag;
+}
+
+export function isRestrictionTag(value: unknown): value is RestrictionTag {
+  return typeof value === 'string' && (restrictionOptions.some(({ tag }) => tag === value)
+    || (value.startsWith('custom:') && value.slice(7).trim().length > 0 && value.length <= 87));
+}
+
+export function customRestrictionTag(value: string): RestrictionTag | null {
+  const label = value.trim().replace(/\s+/g, ' ').toLowerCase();
+  if (!label || label.length > 80) return null;
+  const preset = restrictionOptions.find((option) => option.tag === label || option.label.toLowerCase() === label);
+  return preset?.tag ?? `custom:${label}`;
 }

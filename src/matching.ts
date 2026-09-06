@@ -5,7 +5,7 @@ export function matchDish(dish: Dish, restrictions: Restriction[]) {
   if (conflicts.length) {
     return { status: 'conflict', label: 'Dietary conflict', conflicts } as const;
   }
-  if (!dish.complete) {
+  if (!dish.complete || restrictions.some(({ tag }) => tag.startsWith('custom:'))) {
     return { status: 'unknown', label: 'Details needed', conflicts } as const;
   }
   if (!restrictions.length) {

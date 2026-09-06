@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState, type SetStateAction } from 'react';
-import { restrictionOptions, type Restriction } from '../domain';
+import { isRestrictionTag, type Restriction } from '../domain';
 import { supabase } from '../lib/supabase';
 import { emptyUserData, type UserData } from './types';
 
@@ -25,7 +25,7 @@ export function useUserData(userId?: string) {
           }
           saved = { ...saved, ...parsed };
           saved.restrictions = saved.restrictions.filter((item) =>
-            restrictionOptions.some(({ tag }) => tag === item.tag) &&
+            item && isRestrictionTag(item.tag) &&
             ['low', 'medium', 'high'].includes(item.severity));
         }
         if (!active) return;
