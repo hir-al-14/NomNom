@@ -44,6 +44,7 @@ export function UserApp({ userId, onExit }: Props) {
 
   function navigate(next: Route, id?: string) {
     Keyboard.dismiss();
+    if (next === 'chat' && !id) setRestaurantId('');
     if (id && (next === 'restaurant' || next === 'chat')) setRestaurantId(id);
     if (id && next === 'dish') {
       setDishId(id);
@@ -79,7 +80,7 @@ export function UserApp({ userId, onExit }: Props) {
   if (!ready) return <View style={styles.loading}><ActivityIndicator color={colors.teal} /><Text style={styles.message}>Opening NomNom…</Text></View>;
   const selected: Tab = ['edit', 'settings', 'buddy'].includes(route) ? 'profile'
     : ['restaurant', 'dish'].includes(route) ? 'search'
-      : ['home', 'search', 'favorites', 'profile', 'note'].includes(route) ? route as Tab : 'home';
+      : ['home', 'search', 'favorites', 'profile', 'note', 'chat'].includes(route) ? route as Tab : 'home';
   const screens = {
     home: <Home />, search: <SearchScreen />, favorites: <FavoritesScreen />,
     restaurant: <RestaurantScreen />, dish: <MealDetail />, cart: <Cart />,

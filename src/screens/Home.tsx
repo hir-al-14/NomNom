@@ -1,7 +1,7 @@
-import { Bell,ChevronRight,MessageCircle,Search as SearchIcon,ShoppingCart,Sun } from 'lucide-react-native';
+import { Search as SearchIcon,ShoppingCart,Sun } from 'lucide-react-native';
 import { Pressable,ScrollView,Text,View } from 'react-native';
 import { IconButton,Section } from '../components/Primitives';
-import { Body,Screen } from '../components/ui';
+import { Screen } from '../components/ui';
 import { restaurants } from '../demo/menu';
 import { useApp } from '../state/AppContext';
 import { colors } from '../theme';
@@ -34,17 +34,5 @@ export function Home() {
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
       {[...restaurants].reverse().map((restaurant) => <RestaurantCard key={restaurant.id} restaurant={restaurant} />)}
     </ScrollView>
-    <Section>Your cart</Section>
-    <Pressable accessibilityRole="button" onPress={() => navigate('cart')} style={styles.activity}>
-      <ShoppingCart size={24} color={colors.text} />
-      <Text style={styles.activityText}>{quantity ? `${quantity} ${quantity === 1 ? 'item' : 'items'} ready to review` : 'Your next meal starts here'}</Text>
-      <ChevronRight size={24} color={colors.primary} />
-    </Pressable>
-    <View style={styles.sectionRow}>
-      <IconButton Icon={MessageCircle} label="Messages" onPress={() => navigate('chat')} />
-      <Body>Sample restaurant catalog</Body>
-      <IconButton Icon={Bell} label="Notifications" onPress={() => navigate('notifications')} />
-    </View>
   </Screen>;
 }
-
