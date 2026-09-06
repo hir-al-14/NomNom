@@ -1,3 +1,5 @@
+import { useCatalog } from '../state/CatalogContext';
+import { DishPhoto } from '../components/DishPhoto';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowLeft,Beef,Droplet,Flame,MessageCircle,ShoppingCart,Wheat } from 'lucide-react-native';
 import { useState } from 'react';
@@ -6,7 +8,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton,Pill,Section } from '../components/Primitives';
 import { Action,Body } from '../components/ui';
 import { dishImages } from '../demo/images';
-import { initialDishes } from '../demo/menu';
 import { money,restrictionLabel } from '../domain';
 import { matchDish } from '../matching';
 import { useApp } from '../state/AppContext';
@@ -15,6 +16,7 @@ import { colors } from '../theme';
 import { MatchPill,styles } from './MealsShared';
 
 export function MealDetail() {
+  const { dishes: initialDishes } = useCatalog();
   const { dishId, data, navigate, addToCart } = useApp();
   const [tab, setTab] = useState('Ingredients');
   const insets = useSafeAreaInsets();
@@ -22,7 +24,7 @@ export function MealDetail() {
   const match = matchDish(dish, data.restrictions);
   return <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 24 }}>
     <StatusBar style="light" />
-    <Image source={dishImages[dish.id]} style={styles.hero} />
+    <DishPhoto dish={dish} height={280} />
     <View style={[styles.heroBar, { top: insets.top }]}>
       <IconButton Icon={ArrowLeft} label="Back to restaurant" color="white" onPress={() => navigate('restaurant', dish.restaurantId)} />
       <IconButton Icon={ShoppingCart} label="View cart" color="white" onPress={() => navigate('cart')} />
@@ -63,4 +65,3 @@ export function MealDetail() {
     </View>
   </ScrollView>;
 }
-

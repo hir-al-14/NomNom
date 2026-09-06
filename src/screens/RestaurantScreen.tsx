@@ -1,3 +1,5 @@
+import { useCatalog } from '../state/CatalogContext';
+import { DesignPhoto } from '../components/DesignPhoto';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowLeft,MessageCircle,ShoppingCart } from 'lucide-react-native';
 import { useState } from 'react';
@@ -6,13 +8,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton,Pill,Section } from '../components/Primitives';
 import { Body } from '../components/ui';
 import { restaurantImages } from '../demo/images';
-import { initialDishes,restaurants } from '../demo/menu';
 import { useApp } from '../state/AppContext';
 import { colors } from '../theme';
 
 import { MenuRow,styles } from './MealsShared';
 
 export function RestaurantScreen() {
+  const { restaurants, dishes: initialDishes } = useCatalog();
   const { restaurantId, navigate, data } = useApp();
   const [tab, setTab] = useState('Menu');
   const insets = useSafeAreaInsets();
@@ -20,7 +22,7 @@ export function RestaurantScreen() {
   const dishes = initialDishes.filter((dish) => dish.restaurantId === restaurant.id);
   return <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 24 }}>
     <StatusBar style="light" />
-    <Image source={restaurantImages[restaurant.id]} style={styles.hero} />
+    {restaurant.id === 'window' ? <DesignPhoto photo="cafe" height={280} /> : <Image source={restaurantImages[restaurant.id]} style={styles.hero} />}
     <View style={[styles.heroBar, { top: insets.top }]}>
       <IconButton Icon={ArrowLeft} label="Back to home" color="white" onPress={() => navigate('home')} />
       <IconButton Icon={ShoppingCart} label={`Cart, ${data.cart.length} dishes`} color="white" onPress={() => navigate('cart')} />
@@ -39,9 +41,9 @@ export function RestaurantScreen() {
       ))}</View>
       {tab === 'Menu' && <>
         {!dishes.length && <Body>This sample listing does not have a menu yet. Cava has a menu you can explore.</Body>}
-        {!!dishes.length && <Body>Bowls</Body>}
+        {!!dishes.length && <Body>{restaurant.id === 'window' ? 'Menu items' : 'Bowls'}</Body>}
         {dishes.filter((dish) => dish.id !== 'seasonal-special').map((dish) => <MenuRow key={dish.id} dish={dish} />)}
-        {!!dishes.length && <Body>Sides</Body>}
+        {dishes.some((dish) => dish.id === 'seasonal-special') && <Body>Sides</Body>}
         {dishes.filter((dish) => dish.id === 'seasonal-special').map((dish) => <MenuRow key={dish.id} dish={dish} />)}
       </>}
       {tab === 'Info' && <><Section>About this listing</Section><Body>{restaurant.address}</Body>
@@ -53,4 +55,3 @@ export function RestaurantScreen() {
     </View>
   </ScrollView>;
 }
-

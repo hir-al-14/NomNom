@@ -1,14 +1,15 @@
+import { useCatalog } from '../state/CatalogContext';
 import { Search as SearchIcon,ShoppingCart,Sun } from 'lucide-react-native';
 import { Pressable,ScrollView,Text,View } from 'react-native';
 import { IconButton,Section } from '../components/Primitives';
 import { Screen } from '../components/ui';
-import { restaurants } from '../demo/menu';
 import { useApp } from '../state/AppContext';
 import { colors } from '../theme';
 
 import { RestaurantCard,styles } from './DiscoveryShared';
 
 export function Home() {
+  const { restaurants } = useCatalog();
   const { data, navigate } = useApp();
   const quantity = data.cart.reduce((sum, item) => sum + item.quantity, 0);
   return <Screen>

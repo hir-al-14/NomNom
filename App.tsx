@@ -7,12 +7,11 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { AccountTypeSelector, type AccountType } from './src/components/AccountTypeSelector';
 import { colors, spacing, typography } from './src/theme';
-import { UserApp } from './src/UserApp';
+import { Workspace } from './src/Workspace';
 import { LoginHeader } from './src/components/LoginHeader';
 import { AuthForm } from './src/components/AuthForm';
 import { useSession } from './src/hooks/useSession';
 import { supabase } from './src/lib/supabase';
-import { RestaurantWorkspace } from './src/screens/RestaurantWorkspace';
 
 function AppContent() {
   const [fontsLoaded, fontError] = useFonts({ Manrope_400Regular, Manrope_700Bold });
@@ -33,10 +32,8 @@ function AppContent() {
       }
       setInDemo(false);
     };
-    if (accountType === 'restaurant') return <RestaurantWorkspace email={session?.user.email}
-      onSwitch={() => setAccountType('personal')} onExit={onExit} />;
-    return <UserApp key={session?.user.id ?? 'guest'} userId={session?.user.id}
-      onSwitchMode={() => setAccountType('restaurant')} onExit={onExit} />;
+    return <Workspace key={session?.user.id ?? 'guest'} userId={session?.user.id} mode={accountType}
+      onSwitch={() => setAccountType(accountType === 'restaurant' ? 'personal' : 'restaurant')} onExit={onExit} />;
   }
 
   const welcome = (

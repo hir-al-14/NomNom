@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react-native';
 import { Image,Pressable,StyleSheet,Text,View } from 'react-native';
 import { IconButton,Pill } from '../components/Primitives';
 import { dishImages } from '../demo/images';
+import { DishPhoto } from '../components/DishPhoto';
 import { type Dish } from '../domain';
 import { matchDish } from '../matching';
 import { useApp } from '../state/AppContext';
@@ -19,7 +20,7 @@ export function MenuRow({ dish }: { dish: Dish }) {
   return <View style={styles.menuRow}>
     <Pressable accessibilityRole="button" accessibilityLabel={`View ${dish.name}`}
       onPress={() => navigate('dish', dish.id)} style={styles.dishLink}>
-      <Image source={dishImages[dish.id]} style={styles.thumb} />
+      <DishPhoto dish={dish} width={80} height={62} />
       <View style={styles.dishText}><Text style={styles.dishName}>{dish.name}</Text><MatchPill dish={dish} /></View>
     </Pressable>
     <IconButton Icon={Plus} label={`Add ${dish.name} to cart`} color={colors.deepTeal} onPress={() => addToCart(dish.id)} />

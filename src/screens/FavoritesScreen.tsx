@@ -1,12 +1,13 @@
+import { useCatalog } from '../state/CatalogContext';
 import { View } from 'react-native';
 import { Header } from '../components/Primitives';
 import { Body,Screen } from '../components/ui';
-import { restaurants } from '../demo/menu';
 import { useApp } from '../state/AppContext';
 
 import { RestaurantCard,styles } from './DiscoveryShared';
 
 export function FavoritesScreen() {
+  const { restaurants } = useCatalog();
   const { data, navigate } = useApp();
   const favorites = restaurants.filter((restaurant) => data.favorites.includes(restaurant.id));
   return <Screen>

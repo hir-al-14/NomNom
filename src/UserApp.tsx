@@ -1,10 +1,10 @@
+import { useCatalog } from './state/CatalogContext';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as Speech from 'expo-speech';
 import { BottomNav, type Tab } from './components/BottomNav';
 import { FloatingActions } from './components/FloatingActions';
-import { initialDishes } from './demo/menu';
 import { matchDish } from './matching';
 import { AppContext } from './state/AppContext';
 import { useUserData } from './state/useUserData';
@@ -24,10 +24,11 @@ import { Notifications } from './screens/Notifications';
 import { Chat } from './screens/Chat';
 import { colors, typography } from './theme';
 
-type Props = { userId?: string; onExit: () => void; onSwitchMode: () => void };
+type Props = { userId?: string; user: ReturnType<typeof useUserData>; onExit: () => void; onSwitchMode: () => void };
 
-export function UserApp({ userId, onExit, onSwitchMode }: Props) {
-  const { data, update, ready, error, saveProfile } = useUserData(userId);
+export function UserApp({ userId, user, onExit, onSwitchMode }: Props) {
+  const { dishes: initialDishes } = useCatalog();
+  const { data, update, ready, error, saveProfile } = user;
   const [route, setRoute] = useState<Route>('home');
   const [restaurantId, setRestaurantId] = useState('demo-kitchen');
   const [dishId, setDishId] = useState(initialDishes[0].id);
