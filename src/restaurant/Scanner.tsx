@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppState, Linking, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { Header, Pill } from '../components/Primitives';
+import { Card, Header, Pill } from '../components/Primitives';
 import { Action, Body, Screen } from '../components/ui';
 import { parseFoodNote, restrictionLabel } from '../domain';
 import { matchDish } from '../matching';
@@ -38,7 +38,9 @@ export function Scanner() {
     }} />
   </Screen>;
   if (note) return <Screen>
-    <Header title="Food-note" onBack={reset} /><Text style={s.title}>{note.name || 'Guest'}</Text>
+    <Header title="Customer Food-note" onBack={reset} />
+    <Card><Text style={s.small}>Customer name</Text><Text style={s.title}>{note.name || 'Name not provided'}</Text></Card>
+    <Text style={s.title}>Dietary restrictions</Text>
     {!note.restrictions.length && <Body>No dietary restrictions selected.</Body>}
     {note.restrictions.map(({ tag, severity }, index) => <Pill key={`${tag}-${index}`} tone={severity}>{restrictionLabel(tag)} · {severity}</Pill>)}
     <Text style={s.title}>Your menu</Text>
