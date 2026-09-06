@@ -7,7 +7,8 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hiral1410.nom-nom"
     },
     "android": {
       "adaptiveIcon": {
@@ -16,14 +17,23 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font",
-      ["expo-camera", { "cameraPermission": "Allow NomNom to scan Food-note QR codes.", "recordAudioAndroid": false }]
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow NomNom to scan Food-note QR codes.",
+          "recordAudioAndroid": false
+        }
+      ]
     ]
   }
 }
