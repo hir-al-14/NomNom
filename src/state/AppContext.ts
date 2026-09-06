@@ -1,5 +1,5 @@
 import { createContext, useContext, type Dispatch, type SetStateAction } from 'react';
-import type { Restriction } from '../domain';
+import type { Restriction, CartItem, Dish } from '../domain';
 import type { Route, UserData } from './types';
 
 export type AppContextValue = {
@@ -13,6 +13,8 @@ export type AppContextValue = {
   onExit: () => void;
   onSwitchMode: () => void;
   signedIn: boolean;
+  sendMessage: (restaurantId: string, body: string) => Promise<void>;
+  placeOrder: (items: CartItem[], dishes: Dish[], requestKey: string) => Promise<void>;
 };
 
 export const AppContext = createContext<AppContextValue | null>(null);

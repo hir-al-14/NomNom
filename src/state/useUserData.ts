@@ -1,8 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState, type SetStateAction } from 'react';
-import { isRestrictionTag, type Restriction } from '../domain';
+import { isRestrictionTag, type Restriction, type CartItem, type Dish } from '../domain';
 import { supabase } from '../lib/supabase';
 import { emptyUserData, type UserData } from './types';
+import { useActivity } from './useActivity';
+import { sendCustomerMessage } from '../lib/activity';
+import { preferences, applyPreferences } from '../lib/preferences';
 
 export function useUserData(userId?: string) {
   const [data, setData] = useState<UserData>(emptyUserData);
@@ -11,6 +14,9 @@ export function useUserData(userId?: string) {
   const [canPersist, setCanPersist] = useState(false);
   const pending = useRef(Promise.resolve());
   const key = `nomnom:user:v1:${userId ?? 'guest'}`;
+  const activity = useActivity(!!userId, userId);
+  const [cloudReady, setCloudReady] = useState(false);
+  const lastPreferences = useRef('');
 
   useEffect(() => {
     let active = true;
@@ -32,16 +38,18 @@ export function useUserData(userId?: string) {
         setData(saved);
         setCanPersist(true);
         if (userId && supabase) {
-          const [profile, restrictions] = await Promise.all([
+          const [profile, restrictions, prefs] = await Promise.all([
             supabase.from('profiles').select('name').eq('id', userId).maybeSingle(),
             supabase.from('restrictions').select('tag,severity').eq('user_id', userId),
+            supabase.from('user_preferences').select('*').eq('user_id', userId).maybeSingle(),
           ]);
           if (!active) return;
-          if (profile.error || restrictions.error) {
+          if (profile.error || restrictions.error || prefs.error) {
             setError('Profile sync is unavailable. Your saved device data is still available.');
           } else {
-            setData((current) => ({ ...current, name: profile.data?.name ?? current.name,
-              restrictions: (restrictions.data ?? []) as Restriction[] }));
+            setData((current) => ({ ...current, ...applyPreferences(prefs.data), name: profile.data?.name ?? current.name,
+              restrictions: (restrictions.data ?? []) as Restriction[], orders: [], messages: [] }));
+            setCloudReady(true);
           }
         }
       } catch {
@@ -61,6 +69,28 @@ export function useUserData(userId?: string) {
       .catch(() => setError('Changes could not be saved on this device. Please try again.'));
   }, [data, ready, canPersist, key]);
 
+  useEffect(() => {
+    if (!userId || !supabase || !ready || !cloudReady) return;
+    const snapshot = preferences(data); const serialized = JSON.stringify(snapshot);
+    if (serialized === lastPreferences.current) return;
+    lastPreferences.current = serialized;
+    pending.current = pending.current.then(async () => {
+      const result = await supabase!.from('user_preferences').upsert({ user_id: userId, ...snapshot });
+      if (result.error) { lastPreferences.current = ''; setError('Preferences could not sync. Your device copy is saved.'); }
+    }).catch(() => { lastPreferences.current = ''; setError('Preferences could not sync.'); });
+  }, [data, ready, cloudReady, userId]);
+
+  useEffect(() => {
+    if (!userId || !ready) return;
+    setData((current) => ({ ...current, orders: activity.orders, messages: activity.messages,
+      notifications: activity.orders.map((order) => {
+        const id = `${order.id}:${order.readyRestaurantIds?.length ? 'ready' : 'new'}`;
+        return { id, title: order.readyRestaurantIds?.length ? 'Order ready' : 'Order placed',
+          body: order.items.map((item) => `${item.quantity} × ${item.name}`).join(', '), createdAt: order.placedAt,
+          read: current.notifications.some((notice) => notice.id === id && notice.read) };
+      }) }));
+  }, [activity.orders, activity.messages, userId, ready]);
+
   function update(change: SetStateAction<UserData>) {
     setCanPersist(true);
     setData(change);
@@ -78,5 +108,17 @@ export function useUserData(userId?: string) {
     update(next);
     setError('');
   }
-  return { data, update, ready, error, saveProfile };
+  async function sendMessage(restaurantId: string, body: string) {
+    if (!userId) throw new Error('Sign in to send a message.');
+    await sendCustomerMessage(userId, restaurantId, data.name, body); activity.refresh();
+  }
+  async function placeOrder(items: CartItem[], dishes: Dish[], requestKey: string) {
+    if (!userId || !supabase) throw new Error('Sign in to place an order.');
+    const result = await supabase.rpc('place_orders', { request_key: requestKey,
+      items: items.map((item) => ({ ...item, priceCents: dishes.find((dish) => dish.id === item.dishId)?.priceCents })) });
+    if (result.error) throw new Error(result.error.message);
+    update((current) => ({ ...current, cart: current.cart.filter((item) => !items.some((ordered) => ordered.dishId === item.dishId)) }));
+    activity.refresh();
+  }
+  return { data, update, ready, error: error || activity.error, saveProfile, userId, sendMessage, placeOrder };
 }

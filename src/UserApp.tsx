@@ -90,7 +90,8 @@ export function UserApp({ userId, user, onExit, onSwitchMode }: Props) {
     notifications: <Notifications />, chat: <Chat />, buddy: <CareBuddy />,
   };
   return <AppContext.Provider value={{ data, update, navigate, restaurantId, dishId,
-    saveProfile, addToCart, onExit, onSwitchMode, signedIn: !!userId }}>
+    saveProfile, addToCart, onExit, onSwitchMode, signedIn: !!userId,
+    sendMessage: user.sendMessage, placeOrder: user.placeOrder }}>
     <View style={styles.app}>
       <StatusBar style="dark" />
       {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
