@@ -1,14 +1,13 @@
-import { ChefHat, Heart, House, MessageCircle, Search, UserRound } from 'lucide-react-native';
+import { ChefHat, Heart, House, Search, UserRound } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { cardShadow, colors } from '../theme';
 
-export type Tab = 'home' | 'search' | 'note' | 'chat' | 'favorites' | 'profile';
+export type Tab = 'home' | 'search' | 'note' | 'favorites' | 'profile';
 const tabs = [
   { id: 'home', label: 'Home', Icon: House },
   { id: 'search', label: 'Search', Icon: Search },
   { id: 'note', label: 'Food-note', Icon: ChefHat },
-  { id: 'chat', label: 'Messages', Icon: MessageCircle },
   { id: 'favorites', label: 'Favorites', Icon: Heart },
   { id: 'profile', label: 'Profile', Icon: UserRound },
 ] as const;

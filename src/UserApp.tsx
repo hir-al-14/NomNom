@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, Keyboard, StyleSheet, Text, View } from 'reac
 import { StatusBar } from 'expo-status-bar';
 import * as Speech from 'expo-speech';
 import { BottomNav, type Tab } from './components/BottomNav';
+import { FloatingActions } from './components/FloatingActions';
 import { initialDishes } from './demo/menu';
 import { matchDish } from './matching';
 import { AppContext } from './state/AppContext';
@@ -80,7 +81,7 @@ export function UserApp({ userId, onExit, onSwitchMode }: Props) {
   if (!ready) return <View style={styles.loading}><ActivityIndicator color={colors.teal} /><Text style={styles.message}>Opening NomNom…</Text></View>;
   const selected: Tab = ['edit', 'settings', 'buddy'].includes(route) ? 'profile'
     : ['restaurant', 'dish'].includes(route) ? 'search'
-      : ['home', 'search', 'favorites', 'profile', 'note', 'chat'].includes(route) ? route as Tab : 'home';
+      : ['home', 'search', 'favorites', 'profile', 'note'].includes(route) ? route as Tab : 'home';
   const screens = {
     home: <Home />, search: <SearchScreen />, favorites: <FavoritesScreen />,
     restaurant: <RestaurantScreen />, dish: <MealDetail />, cart: <Cart />,
@@ -93,7 +94,10 @@ export function UserApp({ userId, onExit, onSwitchMode }: Props) {
       <StatusBar style="dark" />
       {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
       <View style={styles.app} key={route}>{screens[route]}</View>
-      {!keyboardOpen && <BottomNav selected={selected} onSelect={navigate} />}
+      {!keyboardOpen && <>
+        <FloatingActions onChat={() => navigate('chat')} onNotifications={() => navigate('notifications')} />
+        <BottomNav selected={selected} onSelect={navigate} />
+      </>}
     </View>
   </AppContext.Provider>;
 }
