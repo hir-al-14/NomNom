@@ -1,0 +1,32 @@
+import { StyleSheet } from 'react-native';
+import { cardShadow, colors, typography } from '../theme';
+
+export const ownerStyles = StyleSheet.create({
+  page: { flex: 1, backgroundColor: colors.surface },
+  content: { padding: 24, gap: 16, paddingBottom: 36 },
+  heroHeader: { position: 'absolute', left: 20, right: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  heroTitle: { ...typography.section, color: 'white', fontSize: 24 },
+  title: { ...typography.section, color: colors.text },
+  name: { ...typography.section, fontSize: 24, fontStyle: 'italic', color: colors.text, textAlign: 'center' },
+  subtitle: { ...typography.body, color: colors.textMuted, textAlign: 'center' },
+  small: { ...typography.body, color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  divider: { width: 244, height: 2, backgroundColor: '#C6E3E5', alignSelf: 'center' },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  link: { ...typography.body, fontFamily: typography.title.fontFamily, color: colors.teal, fontSize: 14 },
+  menuRow: { ...cardShadow, padding: 10, borderRadius: 20, backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center', gap: 18 },
+  menuName: { ...typography.section, fontSize: 16, color: colors.text, flex: 1 },
+  arrow: { backgroundColor: colors.deepTeal, borderRadius: 8, padding: 5 },
+  panel: { marginTop: -24, borderTopLeftRadius: 32, borderTopRightRadius: 32, backgroundColor: colors.surface, padding: 24, gap: 18 },
+  handle: { width: 50, height: 4, backgroundColor: colors.paleTeal, borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
+  input: { ...typography.body, color: colors.text, borderWidth: 1, borderColor: colors.paleTeal, borderRadius: 12, padding: 12, minHeight: 48 },
+  button: { backgroundColor: colors.teal, borderRadius: 16, padding: 16, minHeight: 54, alignItems: 'center' },
+  buttonText: { ...typography.body, fontFamily: typography.title.fontFamily, color: colors.surface },
+  error: { ...typography.body, color: '#A3343B', fontSize: 13 },
+  nutrition: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  metric: { flexDirection: 'row', alignItems: 'center', gap: 10, width: '47%' },
+  iconTile: { width: 40, height: 40, borderRadius: 10, backgroundColor: colors.tabs, alignItems: 'center', justifyContent: 'center' },
+  tabs: { flexDirection: 'row', backgroundColor: colors.tabs, borderRadius: 18, padding: 4 },
+  tab: { flex: 1, paddingVertical: 14, alignItems: 'center', borderRadius: 16 },
+  activeTab: { backgroundColor: colors.deepTeal },
+  chip: { backgroundColor: '#FBEFF2', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 },
+});
