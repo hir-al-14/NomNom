@@ -19,7 +19,7 @@ export function MenuRow({ dish }: { dish: Dish }) {
   return <View style={styles.menuRow}>
     <Pressable accessibilityRole="button" accessibilityLabel={`View ${dish.name}`}
       onPress={() => navigate('dish', dish.id)} style={styles.dishLink}>
-      <DishPhoto dish={dish} width={80} height={62} />
+      <DishPhoto dish={dish} width={88} height={88} />
       <View style={styles.dishText}><Text style={styles.dishName}>{dish.name}</Text><MatchPill dish={dish} /></View>
     </Pressable>
     <IconButton Icon={Plus} label={`Add ${dish.name} to cart`} color={colors.deepTeal} onPress={() => addToCart(dish.id)} />

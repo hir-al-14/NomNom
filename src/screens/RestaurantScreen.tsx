@@ -1,5 +1,6 @@
+import { menuSections } from '../domain';
 import { useCatalog } from '../state/CatalogContext';
-import { DesignPhoto } from '../components/DesignPhoto';
+import { RestaurantPhoto } from '../components/RestaurantPhoto';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowLeft,MessageCircle,ShoppingCart } from 'lucide-react-native';
 import { useState } from 'react';
@@ -23,8 +24,7 @@ export function RestaurantScreen() {
   const dishes = initialDishes.filter((dish) => dish.restaurantId === restaurant.id);
   return <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 24 }}>
     <StatusBar style="light" />
-    {restaurant.id === 'window' || !restaurantImages[restaurant.id] ? <DesignPhoto photo="cafe" height={200} fitWidth />
-      : <Image source={restaurantImages[restaurant.id]} style={[styles.hero, { height: 200 }]} />}
+    <RestaurantPhoto restaurant={restaurant} />
     <View style={[styles.heroBar, { top: insets.top }]}>
       <IconButton Icon={ArrowLeft} label="Back to home" color="white" onPress={() => navigate('home')} />
       <IconButton Icon={ShoppingCart} label={`Cart, ${data.cart.length} dishes`} color="white" onPress={() => navigate('cart')} />
@@ -43,10 +43,10 @@ export function RestaurantScreen() {
       ))}</View>
       {tab === 'Menu' && <>
         {!dishes.length && <Body>This restaurant has not added dishes yet.</Body>}
-        {!!dishes.length && <Body>Menu items</Body>}
-        {dishes.filter((dish) => dish.id !== 'seasonal-special').map((dish) => <MenuRow key={dish.id} dish={dish} />)}
-        {dishes.some((dish) => dish.id === 'seasonal-special') && <Body>Sides</Body>}
-        {dishes.filter((dish) => dish.id === 'seasonal-special').map((dish) => <MenuRow key={dish.id} dish={dish} />)}
+        {menuSections(dishes).map((section) => <View key={section.category} style={{ gap: 12 }}>
+          <Section>{section.category}</Section>
+          {section.dishes.map((dish) => <MenuRow key={dish.id} dish={dish} />)}
+        </View>)}
       </>}
       {tab === 'Info' && <><Section>About this listing</Section><Body>{restaurant.address}</Body>
         <Body>Photos and restaurant names follow the wireframes. Ingredient information and prices are demonstration data.</Body></>}

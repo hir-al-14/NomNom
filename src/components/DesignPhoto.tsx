@@ -15,7 +15,7 @@ export function DesignPhoto({ photo, height, width = '100%', fitWidth = false }:
 }) {
   const [measuredWidth, setWidth] = useState(typeof width === 'number' ? width : 375);
   const [x, y, w, h] = crops[photo];
-  const displayHeight = fitWidth ? Math.min(height, measuredWidth * h / w) : height;
+  const displayHeight = height;
   const scale = Math.max(measuredWidth / w, displayHeight / h);
   return <View onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
     style={{ width, height: displayHeight, overflow: 'hidden', borderRadius: 12 }}>
