@@ -22,7 +22,8 @@ export function RestaurantScreen() {
   const dishes = initialDishes.filter((dish) => dish.restaurantId === restaurant.id);
   return <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 24 }}>
     <StatusBar style="light" />
-    {restaurant.id === 'window' ? <DesignPhoto photo="cafe" height={280} /> : <Image source={restaurantImages[restaurant.id]} style={styles.hero} />}
+    {restaurant.id === 'window' ? <DesignPhoto photo="cafe" height={200} fitWidth />
+      : <Image source={restaurantImages[restaurant.id]} style={[styles.hero, { height: 200 }]} />}
     <View style={[styles.heroBar, { top: insets.top }]}>
       <IconButton Icon={ArrowLeft} label="Back to home" color="white" onPress={() => navigate('home')} />
       <IconButton Icon={ShoppingCart} label={`Cart, ${data.cart.length} dishes`} color="white" onPress={() => navigate('cart')} />

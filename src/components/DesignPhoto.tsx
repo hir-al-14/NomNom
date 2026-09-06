@@ -10,17 +10,18 @@ const crops: Record<PhotoKey, [number, number, number, number]> = {
   cupcake: [1348, 644, 110, 96], latte: [1345, 779, 115, 96],
 };
 
-export function DesignPhoto({ photo, height, width = '100%' }: {
-  photo: PhotoKey; height: number; width?: number | `${number}%`;
+export function DesignPhoto({ photo, height, width = '100%', fitWidth = false }: {
+  photo: PhotoKey; height: number; width?: number | `${number}%`; fitWidth?: boolean;
 }) {
   const [measuredWidth, setWidth] = useState(typeof width === 'number' ? width : 375);
   const [x, y, w, h] = crops[photo];
-  const scale = Math.max(measuredWidth / w, height / h);
+  const displayHeight = fitWidth ? Math.min(height, measuredWidth * h / w) : height;
+  const scale = Math.max(measuredWidth / w, displayHeight / h);
   return <View onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
-    style={{ width, height, overflow: 'hidden', borderRadius: 12 }}>
+    style={{ width, height: displayHeight, overflow: 'hidden', borderRadius: 12 }}>
     <Image source={(photo === 'toast' ? toastSource : source) as ImageSourcePropType} accessibilityLabel={photo}
       style={{ position: 'absolute', width: (photo === 'toast' ? 1820 : 1794) * scale, height: (photo === 'toast' ? 1700 : 1248) * scale,
         left: -x * scale + (measuredWidth - w * scale) / 2,
-        top: -y * scale + (height - h * scale) / 2 }} />
+        top: -y * scale + (displayHeight - h * scale) / 2 }} />
   </View>;
 }

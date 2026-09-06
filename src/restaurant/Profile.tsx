@@ -12,7 +12,7 @@ export function OwnerProfile() {
   const insets = useSafeAreaInsets();
   return <ScrollView style={s.page}>
     <StatusBar style="light" />
-    <DesignPhoto photo="cafe" height={280} />
+    <DesignPhoto photo="cafe" height={200} fitWidth />
     <View style={[s.heroHeader, { top: insets.top }]}>
       <IconButton Icon={Settings} label="Restaurant settings" color="white" onPress={() => navigate('settings')} />
       <Text style={s.heroTitle}>Profile</Text>

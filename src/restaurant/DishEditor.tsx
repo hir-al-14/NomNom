@@ -47,7 +47,7 @@ export function DishEditor() {
     finally { setBusy(false); }
   }
   return <ScrollView style={s.page} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
-    <StatusBar style="light" /><DesignPhoto photo={dish.photo} height={300} />
+    <StatusBar style="light" /><DesignPhoto photo={dish.photo} height={200} fitWidth />
     <View style={[s.heroHeader, { top: insets.top }]}><View style={{ backgroundColor: 'white', borderRadius: 12 }}>
       <IconButton Icon={X} label="Close dish editor" onPress={close} />
     </View></View>
