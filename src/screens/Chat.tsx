@@ -1,7 +1,7 @@
 import { useCatalog } from '../state/CatalogContext';
 import { Send } from 'lucide-react-native';
 import { useEffect,useRef,useState } from 'react';
-import { Image,KeyboardAvoidingView,Platform,Pressable,ScrollView,Text,TextInput,View } from 'react-native';
+import { Alert,Image,KeyboardAvoidingView,Platform,Pressable,ScrollView,Text,TextInput,View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../components/Primitives';
 import { Body, Screen } from '../components/ui';
@@ -14,15 +14,23 @@ import { styles,time } from './ActivityShared';
 
 export function Chat() {
   const { restaurants } = useCatalog();
-  const { data, update, restaurantId, navigate } = useApp();
+  const { data, update, restaurantId, navigate, signedIn, sendMessage } = useApp();
+  const [sending, setSending] = useState(false);
   const restaurant = restaurants.find((item) => item.id === restaurantId);
   const [draft, setDraft] = useState('');
   const scroll = useRef<ScrollView>(null);
   const messages = data.messages.filter((message) => message.restaurantId === restaurant?.id);
   useEffect(() => { setDraft(''); }, [restaurantId]);
   useEffect(() => { scroll.current?.scrollToEnd({ animated: true }); }, [messages.length]);
-  function send() {
-    if (!draft.trim() || !restaurant) return;
+  async function send() {
+    if (!draft.trim() || !restaurant || sending) return;
+    if (signedIn) {
+      setSending(true);
+      try { await sendMessage(restaurant.id, draft.trim()); setDraft(''); }
+      catch (error) { Alert.alert('Message not sent', error instanceof Error ? error.message : 'Please try again.'); }
+      finally { setSending(false); }
+      return;
+    }
     const message = { id: localId(), restaurantId: restaurant.id, body: draft.trim(), createdAt: new Date().toISOString() };
     update((current) => ({ ...current, messages: [...current.messages, message] }));
     setDraft('');
@@ -41,7 +49,7 @@ export function Chat() {
       <View style={styles.chatHeader}><Header title={restaurant.name} onBack={() => navigate('chat')} /></View>
       <ScrollView ref={scroll} contentContainerStyle={styles.conversation}
         onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}>
-        <Text style={styles.demo}>{restaurant.id === 'window' ? 'Demo conversation · Switch to restaurant mode to reply on this device.' : 'Demo conversation · Messages are saved on this device, not delivered to a restaurant.'}</Text>
+        {!signedIn && <Text style={styles.demo}>Demo conversation · Messages stay on this device.</Text>}
         {!messages.length && <Body>Ask about ingredients or how a dish is prepared.</Body>}
         {messages.map((message) => <View key={message.id} style={[styles.messageWrap, message.sender === 'restaurant' && { alignItems: 'flex-start' }]}>
           <View style={[styles.bubble, message.sender === 'restaurant' && { backgroundColor: 'white' }]}><Text style={styles.message}>{message.body}</Text></View>
@@ -51,8 +59,8 @@ export function Chat() {
       <View style={styles.composer}>
         <TextInput accessibilityLabel="Message" value={draft} onChangeText={setDraft}
           placeholder="Send a message..." placeholderTextColor={colors.border}
-          multiline maxLength={2000} style={styles.messageInput} />
-        <Pressable accessibilityRole="button" accessibilityLabel="Save demo message" disabled={!draft.trim()} onPress={send} style={styles.send}>
+          multiline maxLength={2000} editable={!sending} style={styles.messageInput} />
+        <Pressable accessibilityRole="button" accessibilityLabel="Send message" disabled={!draft.trim() || sending} onPress={send} style={styles.send}>
           <Send size={24} color={draft.trim() ? colors.border : colors.mutedIcon} />
         </Pressable>
       </View>

@@ -1,6 +1,6 @@
 import { useCatalog } from '../state/CatalogContext';
 import { Minus,Plus,Square,SquareCheck } from 'lucide-react-native';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Alert,Pressable,StyleSheet,Text,View } from 'react-native';
 import { Header,IconButton,Pill } from '../components/Primitives';
 import { Action,Body,Screen } from '../components/ui';
@@ -12,7 +12,10 @@ import { cardShadow,colors,typography } from '../theme';
 
 export function Cart() {
   const { restaurants, dishes: initialDishes } = useCatalog();
-  const { data, update, navigate } = useApp();
+  const { data, update, navigate, signedIn, placeOrder: submitOrder } = useApp();
+  const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
+  const request = useRef({ signature: '', key: '' });
   const [excluded, setExcluded] = useState<string[]>([]);
   const selected = data.cart.filter((item) => !excluded.includes(item.dishId));
   const total = selected.reduce((sum, item) => sum + (initialDishes.find((dish) => dish.id === item.dishId)?.priceCents ?? 0) * item.quantity, 0);
@@ -22,7 +25,22 @@ export function Cart() {
   }
   function placeOrder() {
     if (!selected.length) return;
-    const complete = () => {
+    const complete = async () => {
+      if (submitting.current) return;
+      if (signedIn) {
+        submitting.current = true; setBusy(true);
+        const signature = JSON.stringify(selected);
+        if (request.current.signature !== signature) request.current = { signature, key: localId() };
+        try {
+          await submitOrder(selected, initialDishes, request.current.key);
+          request.current = { signature: '', key: '' };
+          Alert.alert('Order placed', 'Your order was sent to the restaurant. No payment was taken.', [
+            { text: 'View activity', onPress: () => navigate('notifications') },
+          ]);
+        } catch (error) { Alert.alert('Order not placed', error instanceof Error ? error.message : 'Please try again.'); }
+        finally { submitting.current = false; setBusy(false); }
+        return;
+      }
       const id = localId();
       const createdAt = new Date().toISOString();
       const items = selected.flatMap((item) => {
@@ -43,7 +61,7 @@ export function Cart() {
       return status === 'conflict' || status === 'unknown' ? [dish.name] : [];
     });
     if (flagged.length) Alert.alert('Review dietary details', `${flagged.join(', ')} have conflicts or incomplete information.`, [
-      { text: 'Review cart', style: 'cancel' }, { text: 'Place demo order', onPress: complete },
+      { text: 'Review cart', style: 'cancel' }, { text: signedIn ? 'Place order' : 'Place demo order', onPress: complete },
     ]);
     else complete();
   }
@@ -81,8 +99,8 @@ export function Cart() {
       </View>;
     })}
     <View style={styles.subtotal}><Text style={styles.totalLabel}>Subtotal</Text><Text style={styles.total}>{money(total)}</Text></View>
-    <Action label="Place demo order" disabled={!selected.length} onPress={placeOrder} />
-    <Body>Demo checkout · No payment or approval step.</Body>
+    <Action label={busy ? 'Placing order…' : signedIn ? 'Place order' : 'Place demo order'} disabled={!selected.length || busy} onPress={placeOrder} />
+    <Body>{signedIn ? 'Pay at the restaurant. No payment is taken in the app.' : 'Demo checkout · No payment or approval step.'}</Body>
   </Screen>;
 }
 
