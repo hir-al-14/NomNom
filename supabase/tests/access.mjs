@@ -1,0 +1,43 @@
+import { PGlite } from '@electric-sql/pglite';
+import fs from 'node:fs';
+const db = new PGlite();
+await db.exec(`create role anon; create role authenticated; create schema auth;
+create table auth.users(id uuid primary key);
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub', true),'')::uuid$$;
+grant usage on schema auth, public to authenticated, anon; grant execute on function auth.uid() to authenticated, anon;`);
+const root=new URL('../../', import.meta.url).pathname;
+for(const file of fs.readdirSync(root+'/supabase/migrations').sort()) {
+ await db.exec(fs.readFileSync(root+'/supabase/migrations/'+file,'utf8'));
+ console.log('Migration passed:',file);
+}
+await db.exec(`insert into auth.users values ('11111111-1111-4111-8111-111111111111'),('22222222-2222-4222-8222-222222222222'),('33333333-3333-4333-8333-333333333333');`);
+async function asUser(id){await db.exec(`reset role; set role authenticated; select set_config('request.jwt.claim.sub','${id}',false);`);}
+const owner='11111111-1111-4111-8111-111111111111', customer='22222222-2222-4222-8222-222222222222', stranger='33333333-3333-4333-8333-333333333333';
+const menu={profile:{id:'cafe',name:'Cafe',cuisine:'Cafe',address:'Address',hours:'9-5'},dishes:[{id:'toast',restaurantId:'cafe',name:'Toast',priceCents:500,description:'Toast',portions:[{name:'Bread',quantity:1}],flags:['gluten'],flagNotes:{},nutrition:{},photo:'toast',complete:true}]};
+await asUser(owner);
+await db.query('select public.save_restaurant_menu($1::jsonb,0)',[JSON.stringify(menu)]);
+await asUser(customer);
+const [{rows: dishes}]=await db.exec('select * from public.dishes'); if(dishes.length!==1)throw Error('Published menu not readable');
+let rejected=false;try{await db.query('select public.save_restaurant_menu($1::jsonb,1)',[JSON.stringify(menu)]);}catch{rejected=true}if(!rejected)throw Error('Non-owner edited menu');
+const order=await db.query('select public.place_orders($1::jsonb,$2)',[JSON.stringify([{dishId:'toast',quantity:2,priceCents:500}]),'request-1']);
+const retry=await db.query('select public.place_orders($1::jsonb,$2)',[JSON.stringify([{dishId:'toast',quantity:2,priceCents:500}]),'request-1']);
+if(JSON.stringify(order.rows)!==JSON.stringify(retry.rows))throw Error('Retry duplicated order');
+const thread=await db.query("insert into public.chat_threads(customer_id,restaurant_id,customer_name) values(auth.uid(),'cafe','Customer') returning id");
+await db.query('insert into public.chat_messages(thread_id,sender_id,body) values($1,auth.uid(),$2)',[thread.rows[0].id,'Hello']);
+await asUser(stranger);
+for(const table of ['orders','order_items','chat_threads','chat_messages']){const result=await db.query('select * from public.'+table);if(result.rows.length)throw Error('Private data leaked: '+table);}
+await asUser(owner);
+if((await db.query('select * from public.chat_messages')).rows.length!==1)throw Error('Owner cannot read customer message');
+await db.exec("update public.orders set status='ready'");
+async function denied(query, params=[]) { let failed=false;try{await db.query(query,params);}catch{failed=true;}if(!failed)throw Error('Expected access denial: '+query); }
+await asUser(customer);
+await denied('update public.orders set total_cents=1');
+await denied('select public.place_orders($1::jsonb,$2)',[JSON.stringify([{dishId:'toast',quantity:1,priceCents:1}]),'wrong-price']);
+await db.exec("insert into public.user_preferences(user_id,favorites) values(auth.uid(),array['cafe'])");
+await asUser(stranger);
+await denied('insert into public.chat_messages(thread_id,sender_id,body) values($1,auth.uid(),$2)',[thread.rows[0].id,'Not a participant']);
+if((await db.query('select * from public.user_preferences')).rows.length)throw Error('Preferences leaked');
+await db.exec('reset role; set role anon');
+await denied('select * from public.orders');
+console.log('PASS: owner isolation, customer order access, private messages, idempotent checkout');
+await db.close();
