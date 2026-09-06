@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Image,Pressable,ScrollView,Text,View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton,Pill,Section } from '../components/Primitives';
-import { Body } from '../components/ui';
+import { Action, Body, Screen } from '../components/ui';
 import { restaurantImages } from '../demo/images';
 import { useApp } from '../state/AppContext';
 import { colors } from '../theme';
@@ -19,10 +19,11 @@ export function RestaurantScreen() {
   const [tab, setTab] = useState('Menu');
   const insets = useSafeAreaInsets();
   const restaurant = restaurants.find((item) => item.id === restaurantId) ?? restaurants[0];
+  if (!restaurant) return <Screen><Body>No restaurant selected.</Body><Action label="Browse restaurants" onPress={() => navigate('search')} /></Screen>;
   const dishes = initialDishes.filter((dish) => dish.restaurantId === restaurant.id);
   return <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 24 }}>
     <StatusBar style="light" />
-    {restaurant.id === 'window' ? <DesignPhoto photo="cafe" height={200} fitWidth />
+    {restaurant.id === 'window' || !restaurantImages[restaurant.id] ? <DesignPhoto photo="cafe" height={200} fitWidth />
       : <Image source={restaurantImages[restaurant.id]} style={[styles.hero, { height: 200 }]} />}
     <View style={[styles.heroBar, { top: insets.top }]}>
       <IconButton Icon={ArrowLeft} label="Back to home" color="white" onPress={() => navigate('home')} />
@@ -33,7 +34,7 @@ export function RestaurantScreen() {
       <Text style={styles.cuisine}>{restaurant.cuisine}</Text>
       <View style={styles.divider} />
       <Text style={styles.address}>{restaurant.address}</Text>
-      <View style={styles.badges}><Pill tone="neutral">Demo menu</Pill><Pill tone="neutral">Sample prices</Pill></View>
+      <View style={styles.badges}><Pill tone="neutral">{data && dishes.some((dish) => dish.source === 'manual') ? 'Restaurant menu' : 'Demo menu'}</Pill></View>
       <View style={styles.tabs}>{['Menu', 'Info', 'Reviews'].map((label) => (
         <Pressable key={label} accessibilityRole="tab" accessibilityState={{ selected: tab === label }}
           onPress={() => setTab(label)} style={[styles.tab, tab === label && styles.activeTab]}>

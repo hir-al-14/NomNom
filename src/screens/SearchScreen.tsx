@@ -20,6 +20,7 @@ export function SearchScreen() {
   const results = filterRestaurants(restaurants, dishes, data.restrictions, { query, cuisine, maxPrice, dietary });
   return <Screen>
     <Header title="Search" onBack={() => navigate('home')} />
+    <Pressable accessibilityRole="button" onPress={() => navigate('lookup')}><Text style={styles.seeAll}>Search food databases →</Text></Pressable>
     <View style={styles.search}><SearchIcon color={colors.border} size={20} />
       <TextInput accessibilityLabel="Search restaurants" placeholder="Find a meal that fits..." value={query}
         onChangeText={setQuery} autoCorrect={false} style={styles.searchInput} placeholderTextColor={colors.border} />

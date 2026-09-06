@@ -6,7 +6,9 @@ import { loadOwnedRestaurant } from '../lib/catalog';
 import { supabase } from '../lib/supabase';
 
 export function useRestaurantData(userId?: string) {
-  const [data, setData] = useState(restaurantSeed);
+  const [data, setData] = useState<RestaurantData>(() => userId
+    ? { profile: { id: `restaurant:${userId}`, name: '', cuisine: '', address: '', hours: '' }, dishes: [] }
+    : restaurantSeed());
   const [ready, setReady] = useState(false);
   const [error, setError] = useState('');
   const latest = useRef(data);

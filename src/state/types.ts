@@ -1,7 +1,7 @@
 import type { CartItem, DemoOrder, Restriction } from '../domain';
 
 export type Route = 'home' | 'search' | 'favorites' | 'restaurant' | 'dish' |
-  'cart' | 'profile' | 'edit' | 'note' | 'settings' | 'notifications' | 'chat' | 'buddy';
+  'cart' | 'profile' | 'edit' | 'note' | 'settings' | 'notifications' | 'chat' | 'buddy' | 'lookup';
 
 export type Notice = {
   id: string;

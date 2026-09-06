@@ -1,7 +1,7 @@
 import { useCatalog } from '../state/CatalogContext';
 import { DesignPhoto } from '../components/DesignPhoto';
-import { Heart } from 'lucide-react-native';
-import { Image,Pressable,StyleSheet,Text } from 'react-native';
+import { Heart, Store } from 'lucide-react-native';
+import { Image,Pressable,StyleSheet,Text,View } from 'react-native';
 import { restaurantImages } from '../demo/images';
 import type { Restaurant } from '../domain';
 import { matchDish } from '../matching';
@@ -16,7 +16,9 @@ export function RestaurantCard({ restaurant, grid = false }: { restaurant: Resta
   const matches = dishes.filter((dish) => matchDish(dish, data.restrictions).status === 'match').length;
   return <Pressable accessibilityRole="button" accessibilityLabel={`Open ${restaurant.name}`}
     onPress={() => navigate('restaurant', restaurant.id)} style={[styles.card, grid && styles.gridCard]}>
-    {restaurant.id === 'window' ? <DesignPhoto photo="cafe" height={78} /> : <Image source={restaurantImages[restaurant.id]} style={styles.photo} />}
+    {restaurant.id === 'window' ? <DesignPhoto photo="cafe" height={78} /> : restaurantImages[restaurant.id]
+      ? <Image source={restaurantImages[restaurant.id]} style={styles.photo} />
+      : <View style={[styles.photo, { backgroundColor: colors.paleTeal, alignItems: 'center', justifyContent: 'center' }]}><Store size={32} color={colors.border} /></View>}
     <Pressable accessibilityRole="button" accessibilityLabel={`${favorite ? 'Remove' : 'Save'} ${restaurant.name}`}
       accessibilityState={{ selected: favorite }} style={styles.heart} onPress={(event) => {
         event.stopPropagation();

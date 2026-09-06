@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Pressable,ScrollView,Text,View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton,Pill,Section } from '../components/Primitives';
-import { Action,Body } from '../components/ui';
+import { Action,Body,Screen } from '../components/ui';
 import type { MenuDish } from '../restaurant/types';
 import { money,restrictionLabel } from '../domain';
 import { matchDish } from '../matching';
@@ -21,13 +21,15 @@ export function MealDetail() {
   const [tab, setTab] = useState('Ingredients');
   const insets = useSafeAreaInsets();
   const dish = initialDishes.find((item) => item.id === dishId) ?? initialDishes[0];
+  if (!dish) return <Screen><Body>This dish is no longer available.</Body><Action label="Back to search" onPress={() => navigate('search')} /></Screen>;
+  const external = !!dish.source && dish.source !== 'manual';
   const match = matchDish(dish, data.restrictions);
   const details = dish as Partial<MenuDish>;
   return <ScrollView style={styles.page} contentContainerStyle={{ paddingBottom: 24 }}>
     <StatusBar style="light" />
     <DishPhoto dish={dish} height={200} fitWidth />
     <View style={[styles.heroBar, { top: insets.top }]}>
-      <IconButton Icon={ArrowLeft} label="Back to restaurant" color="white" onPress={() => navigate('restaurant', dish.restaurantId)} />
+      <IconButton Icon={ArrowLeft} label="Back" color="white" onPress={() => external ? navigate('lookup') : navigate('restaurant', dish.restaurantId)} />
       <IconButton Icon={ShoppingCart} label="View cart" color="white" onPress={() => navigate('cart')} />
     </View>
     <View style={styles.detailPanel}>
@@ -60,10 +62,11 @@ export function MealDetail() {
         {!dish.complete && <Body>Dietary data is incomplete. Ask the restaurant before ordering.</Body>}
       </>}
       <Body>Confirm preparation and cross-contact details with the restaurant.</Body>
-      <Action label={`Add to cart · ${money(dish.priceCents)}`} onPress={() => addToCart(dish.id)} />
-      <Pressable accessibilityRole="button" onPress={() => navigate('chat', dish.restaurantId)} style={styles.chatLink}>
+      {external ? <Body>Source: {dish.source}. Price and local availability are not supplied. This reference item cannot be ordered here.</Body>
+        : <Action label={`Add to cart · ${money(dish.priceCents)}`} onPress={() => addToCart(dish.id)} />}
+      {!external && <Pressable accessibilityRole="button" onPress={() => navigate('chat', dish.restaurantId)} style={styles.chatLink}>
         <MessageCircle size={20} color={colors.border} /><Text style={styles.linkText}>Chat with restaurant</Text>
-      </Pressable>
+      </Pressable>}
     </View>
   </ScrollView>;
 }
