@@ -20,7 +20,7 @@ export function FloatingActions({ onChat, onNotifications }: Props) {
 }
 
 const styles = StyleSheet.create({
-  actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12,
+  actions: { flexDirection: 'row', justifyContent: 'space-between', gap: 12,
     paddingHorizontal: 24, paddingTop: 8, paddingBottom: 32, flexShrink: 0 },
   button: { ...cardShadow, width: 56, height: 56, borderRadius: 28,
     backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
