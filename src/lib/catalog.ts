@@ -3,11 +3,11 @@ import type { MenuDish, RestaurantData } from '../restaurant/types';
 import type { Restaurant } from '../domain';
 
 export function mapRestaurant(row: any): RestaurantData['profile'] {
-  return { id: row.id, name: row.name, cuisine: row.cuisine, address: row.address, hours: row.hours };
+  return { id: row.id, photo: row.photo, name: row.name, cuisine: row.cuisine, address: row.address, hours: row.hours };
 }
 export function mapDish(row: any): MenuDish {
   return { id: row.id, restaurantId: row.restaurant_id, name: row.name, description: row.description,
-    priceCents: row.price_cents, portions: row.ingredients, ingredients: row.ingredients.map((item: { name: string }) => item.name),
+    category: row.category ?? 'Mains', priceCents: row.price_cents, portions: row.ingredients, ingredients: row.ingredients.map((item: { name: string }) => item.name),
     flags: row.flags, flagNotes: row.flag_notes, nutrition: { carbs: '', protein: '', calories: '', fat: '', ...row.nutrition },
     photo: row.photo, complete: row.complete, source: 'manual' };
 }

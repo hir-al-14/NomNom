@@ -2,6 +2,12 @@ export const restrictionOptions = [
   { tag: 'gluten', label: 'Gluten-free' },
   { tag: 'dairy', label: 'Dairy-free' },
   { tag: 'peanuts', label: 'Peanut-free' },
+  { tag: 'tree-nuts', label: 'Tree nut-free' },
+  { tag: 'eggs', label: 'Egg-free' },
+  { tag: 'soy', label: 'Soy-free' },
+  { tag: 'sesame', label: 'Sesame-free' },
+  { tag: 'fish', label: 'Fish-free' },
+  { tag: 'shellfish', label: 'Shellfish-free' },
   { tag: 'high-fiber', label: 'Low fiber' },
   { tag: 'high-sodium', label: 'Low sodium' },
   { tag: 'hard-texture', label: 'Soft foods' },
@@ -20,11 +26,23 @@ export type Dish = {
   ingredients: string[];
   flags: RestrictionTag[];
   complete: boolean;
+  category?: string;
   source?: 'manual';
   imageUrl?: string;
 };
 
+export const cuisineOptions = ['Mediterranean', 'Italian', 'Japanese', 'Cafe', 'Healthy', 'Other'] as const;
+
+export const dishCategories = ['Bowls', 'Salads', 'Sandwiches', 'Mains', 'Soups', 'Sides', 'Desserts', 'Drinks'] as const;
+
+export function menuSections(dishes: Dish[]) {
+  return [...new Set(dishes.map((dish) => dish.category || 'Mains'))].sort((a, b) => dishCategories.indexOf(a as typeof dishCategories[number]) - dishCategories.indexOf(b as typeof dishCategories[number])).map((category) => ({
+    category, dishes: dishes.filter((dish) => (dish.category || 'Mains') === category),
+  }));
+}
+
 export type Restaurant = {
+  photo?: string;
   id: string;
   name: string;
   cuisine: string;

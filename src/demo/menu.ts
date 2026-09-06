@@ -4,7 +4,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'demo-kitchen',
     name: 'Cava',
-    cuisine: 'Mediterranean · Greek inspired',
+    cuisine: 'Mediterranean',
     address: 'Sacramento, CA · Sample listing',
   },
   {
@@ -22,7 +22,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'window',
     name: 'Window Coffee Bar',
-    cuisine: 'Café',
+    cuisine: 'Cafe',
     address: 'Sample listing',
   },
 ];
@@ -32,6 +32,7 @@ export const initialDishes: Dish[] = [
     id: 'rice-bowl',
     restaurantId: 'demo-kitchen',
     name: 'Chicken Bowl',
+    category: 'Bowls',
     description: 'Chicken served with rice and roasted vegetables.',
     priceCents: 1300,
     ingredients: ['Chicken', 'White rice', 'Carrot', 'Ginger', 'Olive oil'],
@@ -42,6 +43,7 @@ export const initialDishes: Dish[] = [
     id: 'tomato-soup',
     restaurantId: 'demo-kitchen',
     name: 'Greek Salad Bowl',
+    category: 'Salads',
     description: 'A fresh bowl of greens, tomatoes, cucumber, and feta.',
     priceCents: 1150,
     ingredients: ['Lettuce', 'Tomato', 'Cucumber', 'Feta', 'Olive oil'],
@@ -52,6 +54,7 @@ export const initialDishes: Dish[] = [
     id: 'avocado-toast',
     restaurantId: 'demo-kitchen',
     name: 'Falafel Pita',
+    category: 'Sandwiches',
     description: 'Falafel, hummus, and tomatoes tucked into a warm pita.',
     priceCents: 975,
     ingredients: ['Wheat pita', 'Chickpeas', 'Hummus', 'Tomato'],
@@ -62,6 +65,7 @@ export const initialDishes: Dish[] = [
     id: 'seasonal-special',
     restaurantId: 'demo-kitchen',
     name: 'Pita Bread',
+    category: 'Sides',
     description: 'Warm flatbread. Ask staff for complete dietary details.',
     priceCents: 350,
     ingredients: ['Full ingredient list not supplied'],
