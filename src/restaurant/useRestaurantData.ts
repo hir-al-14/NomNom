@@ -10,6 +10,8 @@ export function useRestaurantData(userId?: string) {
     ? { profile: { id: `restaurant:${userId}`, name: '', cuisine: '', address: '', hours: '' }, dishes: [] }
     : restaurantSeed());
   const [ready, setReady] = useState(false);
+  const [selectedId, selectRestaurant] = useState<string>();
+  const [choices, setChoices] = useState<RestaurantData['profile'][]>([]);
   const [error, setError] = useState('');
   const latest = useRef(data);
   const writes = useRef(Promise.resolve());
@@ -17,8 +19,10 @@ export function useRestaurantData(userId?: string) {
   const key = `nomnom:restaurant:v1:${userId ?? 'guest'}`;
   useEffect(() => {
     let active = true;
-    (userId ? loadOwnedRestaurant(userId).then((result) => {
+    setReady(false); setError('');
+    (userId ? loadOwnedRestaurant(userId, selectedId).then((result) => {
       if (!active) return;
+      setChoices(result.choices);
       version.current = result.version; latest.current = result.data; setData(result.data);
     }) : AsyncStorage.getItem(key).then((raw) => {
       if (!active) return;
@@ -30,7 +34,7 @@ export function useRestaurantData(userId?: string) {
     })).catch(() => { if (active) setError('Could not load the saved restaurant. Check database setup, then reopen the app.'); })
       .finally(() => { if (active) setReady(true); });
     return () => { active = false; };
-  }, [key]);
+  }, [key, selectedId]);
   async function save(change: (current: RestaurantData) => RestaurantData) {
     if (!ready || error) throw new Error(error || 'Restaurant is still loading.');
     const operation = writes.current.then(async () => {
@@ -45,5 +49,5 @@ export function useRestaurantData(userId?: string) {
     writes.current = operation.catch(() => {});
     return operation;
   }
-  return { data, ready, error, save, cloud: !!userId };
+  return { data, ready, error, save, cloud: !!userId, choices, selectRestaurant };
 }

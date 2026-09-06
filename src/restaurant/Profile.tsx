@@ -2,13 +2,14 @@ import { ArrowRight, Settings, SquarePen } from 'lucide-react-native';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DishPhoto } from '../components/DishPhoto';
 import { DesignPhoto } from '../components/DesignPhoto';
 import { IconButton } from '../components/Primitives';
 import { useOwner } from './context';
 import { ownerStyles as s } from './styles';
 
 export function OwnerProfile() {
-  const { store: { data, cloud }, navigate } = useOwner();
+  const { store: { data, cloud, choices, selectRestaurant }, navigate } = useOwner();
   const insets = useSafeAreaInsets();
   return <ScrollView style={s.page}>
     <StatusBar style="light" />
@@ -19,6 +20,13 @@ export function OwnerProfile() {
       <IconButton Icon={SquarePen} label="Edit restaurant" color="white" onPress={() => navigate('editProfile')} />
     </View>
     <View style={s.content}>
+      {choices.length > 1 && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+        {choices.map((restaurant) => <Pressable key={restaurant.id} accessibilityRole="radio"
+          accessibilityState={{ checked: data.profile.id === restaurant.id }} onPress={() => selectRestaurant(restaurant.id)}
+          style={[s.chip, data.profile.id === restaurant.id && { backgroundColor: '#BFE4E5' }]}>
+          <Text style={s.small}>{restaurant.name}</Text>
+        </Pressable>)}
+      </ScrollView>}
       <Text style={s.name}>{data.profile.name || 'Your restaurant'}</Text><Text style={s.subtitle}>{data.profile.cuisine}</Text>
       <Text style={[s.small, { textAlign: 'center' }]}>{data.profile.address}</Text>
       <View style={[s.row, { justifyContent: 'center' }]}>
@@ -26,11 +34,11 @@ export function OwnerProfile() {
       </View>
       <View style={s.divider} />
       <View style={s.row}><Text style={s.title}>Menu items</Text>
-        <Pressable accessibilityRole="button" onPress={() => navigate('dish', 'new')} style={{ paddingVertical: 12 }}><Text style={s.link}>+ Add dish</Text></Pressable>
+        <Pressable accessibilityRole="button" onPress={() => navigate(data.profile.name.trim() ? 'dish' : 'editProfile', 'new')} style={{ paddingVertical: 12 }}><Text style={s.link}>+ Add dish</Text></Pressable>
       </View>
       {data.dishes.map((dish) => <Pressable key={dish.id} accessibilityRole="button" accessibilityLabel={`Edit ${dish.name}`}
         style={s.menuRow} onPress={() => navigate('dish', dish.id)}>
-        <DesignPhoto photo={dish.photo} width={96} height={88} />
+        <DishPhoto dish={dish} width={96} height={88} />
         <Text style={s.menuName}>{dish.name}</Text>
         <View style={s.arrow}><ArrowRight size={17} color="white" /></View>
       </Pressable>)}

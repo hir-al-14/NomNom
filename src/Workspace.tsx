@@ -8,7 +8,6 @@ import { useUserData } from './state/useUserData';
 import { UserApp } from './UserApp';
 import { colors } from './theme';
 import { useCatalogData } from './state/useCatalogData';
-import { restaurantSeed } from './restaurant/seed';
 
 export function Workspace({ userId, mode, onSwitch, onExit }: {
   userId?: string; mode: AccountType; onSwitch: () => void; onExit: () => void;
@@ -16,13 +15,12 @@ export function Workspace({ userId, mode, onSwitch, onExit }: {
   const user = useUserData(userId);
   const restaurant = useRestaurantData(userId);
   const remote = useCatalogData(userId, restaurant.data);
-  const demo = userId ? restaurantSeed() : restaurant.data;
   if (!restaurant.ready || !user.ready) return <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'white' }}>
     <ActivityIndicator color={colors.teal} />
   </View>;
   return <CatalogContext.Provider value={{
-    restaurants: [...restaurants.map((item) => item.id === demo.profile.id ? demo.profile : item), ...remote.restaurants],
-    dishes: [...initialDishes, ...demo.dishes, ...remote.dishes],
+    restaurants: userId ? remote.restaurants : restaurants.map((item) => item.id === restaurant.data.profile.id ? restaurant.data.profile : item),
+    dishes: userId ? remote.dishes : [...initialDishes, ...restaurant.data.dishes],
   }}>
     <View style={{ flex: 1 }}>
       {!!remote.error && mode === 'personal' && <Text style={{ padding: 24, color: '#A3343B' }}>{remote.error}</Text>}

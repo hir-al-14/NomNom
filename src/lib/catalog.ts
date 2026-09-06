@@ -20,11 +20,13 @@ export async function loadCatalog(): Promise<{ restaurants: Restaurant[]; dishes
   if (restaurants.error || dishes.error) throw new Error('Could not load restaurants. Check the database setup and connection.');
   return { restaurants: restaurants.data.map(mapRestaurant), dishes: dishes.data.map(mapDish) };
 }
-export async function loadOwnedRestaurant(userId: string) {
+export async function loadOwnedRestaurant(userId: string, restaurantId?: string) {
   if (!supabase) throw new Error('Supabase is not configured.');
-  const result = await supabase.from('restaurants').select('*, dishes(*)').eq('owner_id', userId).maybeSingle();
+  const result = await supabase.from('restaurants').select('*, dishes(*)').eq('owner_id', userId).order('name');
   if (result.error) throw new Error('Could not load your restaurant. Check the database setup and connection.');
-  if (!result.data) return { version: 0, data: { profile: { id: `restaurant:${userId}`, name: '', cuisine: '', address: '', hours: '' }, dishes: [] } as RestaurantData };
-  return { version: result.data.version as number, data: { profile: mapRestaurant(result.data),
-    dishes: result.data.dishes.filter((dish: any) => dish.available).map(mapDish) } as RestaurantData };
+  const choices = result.data.map(mapRestaurant);
+  const selected = result.data.find((row) => row.id === restaurantId) ?? result.data.find((row) => row.id === 'window') ?? result.data[0];
+  if (!selected) return { choices, version: 0, data: { profile: { id: `restaurant:${userId}`, name: '', cuisine: '', address: '', hours: '' }, dishes: [] } as RestaurantData };
+  return { choices, version: selected.version as number, data: { profile: mapRestaurant(selected),
+    dishes: selected.dishes.filter((dish: any) => dish.available).map(mapDish) } as RestaurantData };
 }
