@@ -1,7 +1,6 @@
 import { Plus } from 'lucide-react-native';
-import { Image,Pressable,StyleSheet,Text,View } from 'react-native';
+import { Pressable,StyleSheet,Text,View } from 'react-native';
 import { IconButton,Pill } from '../components/Primitives';
-import { dishImages } from '../demo/images';
 import { DishPhoto } from '../components/DishPhoto';
 import { type Dish } from '../domain';
 import { matchDish } from '../matching';
