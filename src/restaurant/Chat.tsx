@@ -1,7 +1,8 @@
 import { Send, UserRound } from 'lucide-react-native';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useActivity } from '../state/useActivity';
+import { supabase } from '../lib/supabase';
 import { sendReply } from '../lib/activity';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../components/Primitives';
@@ -17,13 +18,21 @@ export function OwnerChat({ thread = false }: { thread?: boolean }) {
   const activity = useActivity(store.cloud, undefined, store.data.profile.id);
   const [sending, setSending] = useState(false);
   const [draft, setDraft] = useState('');
+  const [threadName, setThreadName] = useState('');
+  useEffect(() => {
+    let active = true;
+    if (thread && store.cloud && supabase) supabase.from('chat_threads').select('customer_name').eq('id', threadId).eq('restaurant_id', store.data.profile.id).maybeSingle()
+      .then(({ data }) => { if (active) setThreadName(data?.customer_name || ''); });
+    return () => { active = false; };
+  }, [thread, threadId, store.data.profile.id]);
   const scroll = useRef<ScrollView>(null);
   const all = (store.cloud ? activity.messages : user.data.messages).filter((message) => message.restaurantId === store.data.profile.id);
-  const previews = [...new Map(all.map((message) => [message.threadId ?? 'demo', message])).values()];
+  const previews = [...new Map(all.map((message) => [message.threadId ?? 'demo', message])).values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const messages = all.filter((message) => !store.cloud || message.threadId === threadId);
-  const customer = messages[0]?.customerName || user.data.name || 'Customer';
+  const customer = messages[0]?.customerName || threadName || (!store.cloud ? user.data.name : '') || 'Customer';
   if (!thread) return <Screen>
-    <Header title="Chat" onBack={() => navigate('profile')} />
+    <Header title="Customers" onBack={() => navigate('profile')} />
+    <Body>{store.data.profile.name}</Body>
     <View style={s.divider} />
     {!!activity.error && <Body>{activity.error}</Body>}
     {previews.map((last) => <Pressable key={last.threadId ?? 'demo'} accessibilityRole="button" onPress={() => navigate('thread', last.threadId ?? 'demo')} style={s.menuRow}>
@@ -35,7 +44,7 @@ export function OwnerChat({ thread = false }: { thread?: boolean }) {
   </Screen>;
   return <SafeAreaView edges={['top', 'left', 'right']} style={s.page}>
     <KeyboardAvoidingView style={s.page} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.chatHeader}><Header title={customer} onBack={() => navigate('chat')} /></View>
+      <View style={styles.chatHeader}><Header title={customer} onBack={() => navigate('chat')} /><Body>{store.data.profile.name}</Body></View>
       <ScrollView ref={scroll} contentContainerStyle={styles.conversation} onContentSizeChange={() => scroll.current?.scrollToEnd()}>
         {messages.map((message) => <View key={message.id} style={{ alignItems: message.sender === 'restaurant' ? 'flex-end' : 'flex-start', gap: 4 }}>
           <View style={[styles.bubble, message.sender !== 'restaurant' && { backgroundColor: 'white' }]}><Text style={styles.message}>{message.body}</Text></View>

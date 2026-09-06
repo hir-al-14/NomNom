@@ -5,7 +5,7 @@ import { Alert,Image,KeyboardAvoidingView,Platform,Pressable,ScrollView,Text,Tex
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../components/Primitives';
 import { Body, Screen } from '../components/ui';
-import { restaurantImages } from '../demo/images';
+import { RestaurantPhoto } from '../components/RestaurantPhoto';
 import { useApp } from '../state/AppContext';
 import { localId } from '../state/types';
 import { colors } from '../theme';
@@ -40,7 +40,7 @@ export function Chat() {
     <Body>Choose a restaurant to start a conversation.</Body>
     {restaurants.map((item) => <Pressable key={item.id} accessibilityRole="button"
       accessibilityLabel={`Chat with ${item.name}`} onPress={() => navigate('chat', item.id)} style={styles.thread}>
-      <Image source={restaurantImages[item.id]} style={styles.restaurantImage} />
+      <RestaurantPhoto restaurant={item} width={56} height={56} />
       <Text style={styles.noticeTitle}>{item.name}</Text>
     </Pressable>)}
   </Screen>;

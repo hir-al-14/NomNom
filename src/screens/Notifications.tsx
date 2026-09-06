@@ -23,7 +23,7 @@ export function Notifications() {
           <Text style={styles.small}>{notice.body}</Text><Text style={styles.timestamp}>{time(notice.createdAt)}</Text>
         </View>
       </View></Card></Pressable>)}
-    {!!data.orders.length && <Section>Recent demo orders</Section>}
+    {!!data.orders.length && <Section>Recent orders</Section>}
     {data.orders.map((order) => <Card key={order.id}>
       <Text style={styles.noticeTitle}>{money(order.totalCents)} · {new Date(order.placedAt).toLocaleDateString()}</Text>
       {order.items.map((item, index) => <Body key={`${order.id}-${index}`}>{item.quantity} × {item.name}</Body>)}

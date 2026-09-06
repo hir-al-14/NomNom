@@ -31,6 +31,8 @@ export async function sendCustomerMessage(userId: string, restaurantId: string, 
     else { if (created.error) throw created.error; thread = created; }
   }
   if (!thread.data) throw new Error('Could not open conversation.');
+  const renamed = await supabase.from('chat_threads').update({ customer_name: name.trim() || 'Customer' }).eq('id', thread.data.id);
+  if (renamed.error) throw new Error('Could not update conversation. Check database setup.');
   return sendReply(userId, thread.data.id, body);
 }
 export async function sendReply(userId: string, threadId: string, body: string) {

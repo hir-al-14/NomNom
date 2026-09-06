@@ -22,6 +22,15 @@ export function OwnerOrders() {
       <Text style={s.title}>{order.readyRestaurantIds?.includes(store.data.profile.id) ? 'Ready for pickup' : 'New order'}</Text>
       <Text style={s.small}>{new Date(order.placedAt).toLocaleString()}</Text>
       {!!order.customerName && <Body>{order.customerName}</Body>}
+      {store.cloud && <Pressable accessibilityRole="button" disabled={!!busy} onPress={async () => {
+        setBusy(order.id);
+        try {
+          const result = await supabase!.rpc('open_order_chat', { order_id: order.id });
+          if (result.error) throw result.error;
+          navigate('thread', result.data);
+        } catch { Alert.alert('Could not open chat', 'Check your connection and database setup.'); }
+        finally { setBusy(null); }
+      }}><Text style={s.link}>Chat with {order.customerName || 'customer'}</Text></Pressable>}
       {order.items.filter((item) => item.restaurantId === store.data.profile.id).map((item, index) => <Body key={index}>{item.quantity} × {item.name} · {money(item.priceCents * item.quantity)}</Body>)}
       {!order.readyRestaurantIds?.includes(store.data.profile.id) && <Pressable accessibilityRole="button" disabled={!!busy} style={s.button} onPress={async () => {
         if (store.cloud && supabase) {
