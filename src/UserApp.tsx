@@ -31,7 +31,7 @@ export function UserApp({ userId, user, onExit, onSwitchMode }: Props) {
   const { data, update, ready, error, saveProfile } = user;
   const [route, setRoute] = useState<Route>('home');
   const [restaurantId, setRestaurantId] = useState('demo-kitchen');
-  const [dishId, setDishId] = useState(initialDishes[0].id);
+  const [dishId, setDishId] = useState(initialDishes[0]?.id ?? '');
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   useEffect(() => {
     const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));

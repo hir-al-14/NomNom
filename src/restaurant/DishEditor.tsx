@@ -18,7 +18,7 @@ import { prepareDish } from './validateDish';
 export function DishEditor() {
   const { store, dishId, navigate, user } = useOwner();
   const original = store.data.dishes.find((item) => item.id === dishId);
-  const [dish, setDish] = useState(() => original ?? emptyDish(`window-${localId()}`));
+  const [dish, setDish] = useState(() => original ?? { ...emptyDish(`dish-${localId()}`), restaurantId: store.data.profile.id });
   const [price, setPrice] = useState(original ? (original.priceCents / 100).toFixed(2) : '');
   const [details, setDetails] = useState(!original);
   const [tab, setTab] = useState('Ingredients');

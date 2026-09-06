@@ -20,6 +20,8 @@ export type Dish = {
   ingredients: string[];
   flags: RestrictionTag[];
   complete: boolean;
+  source?: 'manual' | 'nutritionix' | 'spoonacular';
+  imageUrl?: string;
 };
 
 export type Restaurant = {
@@ -37,6 +39,7 @@ export type DemoOrder = {
   items: { name: string; quantity: number; priceCents: number; restaurantId?: string }[];
   totalCents: number;
   readyRestaurantIds?: string[];
+  customerName?: string;
 };
 
 export function money(cents: number) {
