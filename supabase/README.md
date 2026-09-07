@@ -12,7 +12,7 @@ Sign up for the owner account in NomNom first. In the same SQL Editor query, put
 select set_config('nomnom.seed_owner_email', 'YOUR_OWNER_EMAIL', false);
 ```
 
-The import adds four restaurants and seven dishes from the previous frontend. Existing records are not overwritten. Luigino’s and Sokyo have no dishes yet, matching the previous catalog. All imported restaurants belong to the selected account. Restaurant mode opens Window Coffee Bar first and offers a selector for the other menus.
+The import adds four restaurants and seven dishes from the previous frontend. Existing records are not overwritten. Luigino’s and Sokyo have no dishes yet, matching the previous catalog. All imported restaurants belong to the selected account. Restaurant mode opens the Your restaurants chooser before showing an individual menu.
 
 Only owners can edit their menus. Customers can browse published menus. Chat and orders are private to their participants. Orders use server prices and deduplicate retries. There are no payments or external restaurant integrations: these are sample businesses for the project.
 
